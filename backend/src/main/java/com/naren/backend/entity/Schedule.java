@@ -4,44 +4,49 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "routes")
+@Table(name = "schedules")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Route {
+public class Schedule {
 
     @Id
     private String id = UUID.randomUUID().toString();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_location_id", nullable = false)
-    private Location source;
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "destination_location_id", nullable = false)
-    private Location destination;
+    @JoinColumn(name = "route_id", nullable = false)
+    private Route route;
 
-    @Column(name = "distance_km")
-    private Double distanceKm;
+    @Column(name = "departure_time", nullable = false)
+    private LocalDateTime departureTime;
 
-    @Column(name = "estimated_duration_minutes")
-    private Integer estimatedDurationMinutes;
+    @Column(name = "arrival_time", nullable = false)
+    private LocalDateTime arrivalTime;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "actual_departure_time")
+    private LocalDateTime actualDepartureTime;
+
+    @Column(name = "actual_arrival_time")
+    private LocalDateTime actualArrivalTime;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "available_seats", nullable = false)
+    private int availableSeats;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private RouteStatus status;
-
-    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Schedule> schedules;
+    private ScheduleStatus status;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

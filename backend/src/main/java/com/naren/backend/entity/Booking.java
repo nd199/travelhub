@@ -1,79 +1,71 @@
-package com.naren.backend.entity;
+package com.naren.backend.Entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "bookings")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id = UUID.randomUUID().toString();
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "booking_reference", unique = true, nullable = false)
     private String bookingReference;
-
-    @NotNull(message = "Number of passengers is required")
-    @Positive(message = "Number of passengers must be positive")
-    @Column(nullable = false)
-    private Integer numberOfPassengers;
-
-    @NotNull(message = "Total amount is required")
-    @Positive(message = "Total amount must be positive")
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private BookingStatus status = BookingStatus.PENDING;
-
-    @Column(nullable = false)
-    private LocalDateTime bookingDate;
-
-    @Column(length = 500)
-    private String specialRequests;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "route_id", nullable = false)
-    private Route route;
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private BookingStatus status;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Passenger> passengers = new HashSet<>();
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
 
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Payment payment;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Passenger> passengers;
 
-    @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "total_amount", nullable = false)
+    private double totalAmount;
+
+    @Column(name = "discount_amount")
+    private Double discountAmount;
+
+    @Column(name = "tax_amount")
+    private Double taxAmount;
+
+    @Column(name = "final_amount")
+    private Double finalAmount;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public enum BookingStatus {
-        PENDING, CONFIRMED, CANCELLED, COMPLETED, REFUNDED
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

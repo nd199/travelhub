@@ -7,20 +7,23 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "transactions")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Payment {
+public class Transaction {
 
     @Id
     private String id = UUID.randomUUID().toString();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
+
+    @Column(name = "transaction_reference", unique = true, nullable = false)
+    private String transactionReference;
 
     @Column(name = "amount", nullable = false)
     private double amount;
@@ -28,21 +31,18 @@ public class Payment {
     @Column(name = "currency", nullable = false)
     private String currency = "INR";
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private PaymentStatus status;
-
-    @Column(name = "method", nullable = false)
-    private String method;
-
-    @Column(name = "transaction_reference")
-    private String transactionReference;
+    @Column(name = "gateway_name")
+    private String gatewayName;
 
     @Column(name = "gateway_transaction_id")
     private String gatewayTransactionId;
 
-    @Column(name = "gateway_response")
+    @Column(name = "gateway_response", nullable = false)
     private String gatewayResponse;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private PaymentStatus status;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

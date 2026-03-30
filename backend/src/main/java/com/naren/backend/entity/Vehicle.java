@@ -1,75 +1,64 @@
-package com.naren.backend.entity;
+package com.naren.backend.Entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "vehicles")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Vehicle {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id = UUID.randomUUID().toString();
 
-    @NotBlank(message = "Vehicle number is required")
-    @Column(nullable = false, unique = true)
-    private String vehicleNumber;
-
-    @NotBlank(message = "Vehicle name is required")
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private VehicleType type;
 
-    @NotNull(message = "Total seats is required")
-    @Positive(message = "Total seats must be positive")
-    @Column(nullable = false)
-    private Integer totalSeats;
+    @Column(name = "capacity", nullable = false)
+    private int capacity;
 
-    @NotNull(message = "Available seats is required")
-    @Positive(message = "Available seats must be positive")
-    @Column(nullable = false)
-    private Integer availableSeats;
+    @Column(name = "amenities")
+    private String amenities;
 
-    @Column(nullable = false)
-    private Boolean active = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private VehicleStatus status;
 
-    @Column(length = 500)
-    private String description;
+    @Column(name = "registration_number", unique = true)
+    private String registrationNumber;
 
-    @Column(nullable = false)
-    private String operator;
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Seat> seats;
 
-    @CreationTimestamp
-    @Column(updatable = false)
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Schedule> schedules;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Route> routes = new HashSet<>();
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Booking> bookings = new HashSet<>();
-
-    public enum VehicleType {
-        BUS, TRAIN, FLIGHT, MINI_BUS, LUXURY_BUS
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
