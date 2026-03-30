@@ -2,22 +2,28 @@ spring:
   application:
     name: transport-booking-system
 
-  # Database Configuration
+  # Database Configuration - H2 In-Memory Database
   datasource:
-    url: jdbc:postgresql://localhost:5432/transport_booking
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:transport_booking
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
 
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # H2 Console (for development)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   # Security Configuration
   security:

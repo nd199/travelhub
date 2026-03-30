@@ -17,6 +17,7 @@ import java.util.UUID;
 public class Booking {
 
     @Id
+    @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     @Column(name = "booking_reference", unique = true, nullable = false)

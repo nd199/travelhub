@@ -19,6 +19,7 @@ import java.util.UUID;
 public class Users {
 
     @Id
+    @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     @Column(unique = true, nullable = false)

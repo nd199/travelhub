@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Payment {
 
     @Id
+    @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     @ManyToOne(fetch = FetchType.LAZY)

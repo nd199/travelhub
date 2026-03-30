@@ -5,5 +5,5 @@ public enum VehicleType {
     TRAIN,
     FLIGHT,
     CAR,
-    VAN
+    MINI_BUS, VAN
 }

@@ -17,6 +17,7 @@ import java.util.UUID;
 public class Vehicle {
 
     @Id
+    @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     @Column(name = "name", nullable = false)
