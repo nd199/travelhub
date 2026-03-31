@@ -1,5 +1,6 @@
 package com.naren.backend.Record;
 
+import com.naren.backend.Entity.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -21,7 +22,7 @@ public record UserRequest(
 
         String profileImageUrl,
 
-        String gender,
+        Gender gender,
 
         @NotBlank(message = "Role ID is required")
         String roleId

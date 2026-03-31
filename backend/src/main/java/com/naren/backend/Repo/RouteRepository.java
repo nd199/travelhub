@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface RouteRepository extends JpaRepository<Route, String> {
     List<Route> findByStatus(RouteStatus status);
+
     List<Route> findBySourceId(String sourceId);
+
     List<Route> findByDestinationId(String destinationId);
 }

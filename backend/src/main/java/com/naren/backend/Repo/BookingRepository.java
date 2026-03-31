@@ -11,8 +11,12 @@ import java.util.Optional;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, String> {
     Optional<Booking> findByBookingReference(String bookingReference);
+
     List<Booking> findByUserId(String userId);
+
     List<Booking> findByStatus(BookingStatus status);
+
     List<Booking> findByScheduleId(String scheduleId);
+
     boolean existsByBookingReference(String bookingReference);
 }

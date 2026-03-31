@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String> {
     List<Payment> findByBookingId(String bookingId);
+
     List<Payment> findByStatus(PaymentStatus status);
+
     List<Payment> findByMethod(String method);
 }

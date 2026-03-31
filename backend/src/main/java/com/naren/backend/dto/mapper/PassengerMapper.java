@@ -1,4 +1,4 @@
-package com.naren.backend.dto.mapper;
+package com.naren.backend.DTO.mapper;
 
 import com.naren.backend.Entity.Passenger;
 import com.naren.backend.Record.PassengerResponse;

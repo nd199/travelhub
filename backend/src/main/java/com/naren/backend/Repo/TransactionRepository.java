@@ -1,7 +1,7 @@
 package com.naren.backend.Repo;
 
-import com.naren.backend.Entity.Transaction;
 import com.naren.backend.Entity.PaymentStatus;
+import com.naren.backend.Entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +11,10 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
     Optional<Transaction> findByTransactionReference(String transactionReference);
+
     List<Transaction> findByPaymentId(String paymentId);
+
     List<Transaction> findByStatus(PaymentStatus status);
+
     boolean existsByTransactionReference(String transactionReference);
 }

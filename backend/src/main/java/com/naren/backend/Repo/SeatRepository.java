@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, String> {
     List<Seat> findByVehicleId(String vehicleId);
+
     List<Seat> findByStatus(SeatStatus status);
+
     List<Seat> findByVehicleIdAndStatus(String vehicleId, SeatStatus status);
 }

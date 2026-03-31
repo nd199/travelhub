@@ -9,8 +9,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -63,10 +64,10 @@ public class DataSeeder implements CommandLineRunner {
     private void seedLocations() {
         log.info("Seeding locations...");
         List<Location> locations = new ArrayList<>();
-        
+
         String[] cities = {"Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad", "Jaipur", "Lucknow"};
         String[] states = {"Maharashtra", "Delhi", "Karnataka", "Tamil Nadu", "West Bengal", "Telangana", "Maharashtra", "Gujarat", "Rajasthan", "Uttar Pradesh"};
-        
+
         for (int i = 0; i < 10; i++) {
             Location location = Location.builder()
                     .name(faker.company().name() + " Terminal")
@@ -88,7 +89,7 @@ public class DataSeeder implements CommandLineRunner {
     private void seedVehicles() {
         log.info("Seeding vehicles...");
         List<Vehicle> vehicles = new ArrayList<>();
-        
+
         for (int i = 0; i < 5; i++) {
             Vehicle vehicle = Vehicle.builder()
                     .name(faker.company().name() + " " + (i % 2 == 0 ? "Bus" : "Coach"))
@@ -101,7 +102,7 @@ public class DataSeeder implements CommandLineRunner {
             vehicles.add(vehicle);
         }
         vehicleRepository.saveAll(vehicles);
-        
+
         // Create seats for each vehicle
         log.info("Seeding seats...");
         List<Seat> allSeats = new ArrayList<>();
@@ -126,9 +127,9 @@ public class DataSeeder implements CommandLineRunner {
         List<Role> roles = roleRepository.findAll();
         Role customerRole = roles.stream().filter(r -> r.getName().equals("CUSTOMER")).findFirst().orElse(roles.get(1));
         Role adminRole = roles.stream().filter(r -> r.getName().equals("ADMIN")).findFirst().orElse(roles.get(0));
-        
+
         List<Users> users = new ArrayList<>();
-        
+
         // Create admin user
         Users admin = Users.builder()
                 .email("admin@travelhub.com")
@@ -140,7 +141,7 @@ public class DataSeeder implements CommandLineRunner {
                 .role(adminRole)
                 .build();
         users.add(admin);
-        
+
         // Create customer users
         for (int i = 0; i < 10; i++) {
             Users user = Users.builder()
@@ -162,7 +163,7 @@ public class DataSeeder implements CommandLineRunner {
         log.info("Seeding routes...");
         List<Location> locations = locationRepository.findAll();
         List<Route> routes = new ArrayList<>();
-        
+
         for (int i = 0; i < locations.size() - 1; i++) {
             Route route = Route.builder()
                     .source(locations.get(i))
@@ -183,14 +184,14 @@ public class DataSeeder implements CommandLineRunner {
         List<Route> routes = routeRepository.findAll();
         List<Vehicle> vehicles = vehicleRepository.findAll();
         List<Schedule> schedules = new ArrayList<>();
-        
+
         for (Route route : routes) {
             for (int i = 0; i < 3; i++) {
                 LocalDateTime departure = LocalDateTime.now().plusDays(faker.number().numberBetween(1, 30))
                         .withHour(faker.number().numberBetween(6, 22))
                         .withMinute(faker.random().nextBoolean() ? 0 : 30);
                 LocalDateTime arrival = departure.plusMinutes(route.getEstimatedDurationMinutes() != null ? route.getEstimatedDurationMinutes() : 360);
-                
+
                 Schedule schedule = Schedule.builder()
                         .vehicle(vehicles.get(faker.number().numberBetween(0, vehicles.size())))
                         .route(route)
@@ -212,17 +213,17 @@ public class DataSeeder implements CommandLineRunner {
         List<Users> users = userRepository.findAll();
         List<Schedule> schedules = scheduleRepository.findAll();
         List<Seat> seats = seatRepository.findAll();
-        
+
         List<Booking> bookings = new ArrayList<>();
         List<BookingSeat> bookingSeats = new ArrayList<>();
         List<Passenger> passengers = new ArrayList<>();
         List<Payment> payments = new ArrayList<>();
         List<Transaction> transactions = new ArrayList<>();
-        
+
         for (int i = 0; i < 15; i++) {
             Users user = users.get(faker.number().numberBetween(0, users.size()));
             Schedule schedule = schedules.get(faker.number().numberBetween(0, schedules.size()));
-            
+
             Booking booking = Booking.builder()
                     .bookingReference("BK" + faker.regexify("[A-Z0-9]{8}"))
                     .user(user)
@@ -234,7 +235,7 @@ public class DataSeeder implements CommandLineRunner {
                     .finalAmount(faker.number().randomDouble(2, 500, 5000))
                     .build();
             bookings.add(booking);
-            
+
             // Create passengers for booking
             int passengerCount = faker.number().numberBetween(1, 4);
             for (int j = 0; j < passengerCount; j++) {
@@ -251,7 +252,7 @@ public class DataSeeder implements CommandLineRunner {
                         .build();
                 passengers.add(passenger);
             }
-            
+
             // Create payment for booking
             Payment payment = Payment.builder()
                     .booking(booking)
@@ -264,7 +265,7 @@ public class DataSeeder implements CommandLineRunner {
                     .gatewayResponse("Success")
                     .build();
             payments.add(payment);
-            
+
             // Create transaction for payment
             Transaction transaction = Transaction.builder()
                     .payment(payment)
@@ -278,13 +279,13 @@ public class DataSeeder implements CommandLineRunner {
                     .build();
             transactions.add(transaction);
         }
-        
+
         bookingRepository.saveAll(bookings);
         passengerRepository.saveAll(passengers);
         paymentRepository.saveAll(payments);
         transactionRepository.saveAll(transactions);
-        
-        log.info("Seeded {} bookings, {} passengers, {} payments, {} transactions", 
+
+        log.info("Seeded {} bookings, {} passengers, {} payments, {} transactions",
                 bookings.size(), passengers.size(), payments.size(), transactions.size());
     }
 }

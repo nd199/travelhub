@@ -1,7 +1,7 @@
-package com.naren.backend.dto.mapper;
+package com.naren.backend.DTO.mapper;
 
 import com.naren.backend.Entity.Users;
-import com.naren.backend.dto.UserResponse;
+import com.naren.backend.DTO.UserResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
@@ -18,7 +18,7 @@ public class UserMapper implements Function<Users, UserResponse> {
                 user.getLastName(),
                 user.getPhoneNumber(),
                 user.getProfileImageUrl(),
-                user.getGender() != null ? user.getGender().name() : null,
+                user.getGender() != null ? user.getGender() : null,
                 user.getRole().getId(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()

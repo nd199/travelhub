@@ -1,4 +1,6 @@
-package com.naren.backend.Record;
+package com.naren.backend.DTO;
+
+import com.naren.backend.Entity.Gender;
 
 import java.time.LocalDateTime;
 
@@ -9,7 +11,7 @@ public record UserResponse(
         String lastName,
         String phoneNumber,
         String profileImageUrl,
-        String gender,
+        Gender gender,
         String roleId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

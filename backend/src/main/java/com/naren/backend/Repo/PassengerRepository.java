@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface PassengerRepository extends JpaRepository<Passenger, String> {
     List<Passenger> findByBookingId(String bookingId);
+
     List<Passenger> findBySeatId(String seatId);
 }
