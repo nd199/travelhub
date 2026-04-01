@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class UserServiceTest {
+class UserServiceInterfaceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -33,7 +33,7 @@ class UserServiceTest {
     @Mock
     private UserMapper userMapper;
 
-    private UserServiceImpl underTest;
+    private UserServiceInterface underTest;
 
     @BeforeEach
     void setUp() {
@@ -61,32 +61,51 @@ class UserServiceTest {
                 .hasMessage("User already exists with email: " + userRequest.email());
     }
 
-//    @Test
-//    void createUserRunsFineWhenUserNotPresent() {
-//        String email = "test@email.com";
-//        UserRequest userRequest = new UserRequest(
-//                email, "password",
-//                "John", "Cena",
-//                "0987654321", "",
-//                Gender.MALE,
-//                ""
-//        );
-//        when(userRepository.existsByEmail(email)).thenReturn(false);
-//
-//        UserResponse userResponse = underTest.createUser(userRequest);
-//
-//        ArgumentCaptor<Users> usersArgumentCaptor = ArgumentCaptor.forClass(Users.class);
-//        verify(userRepository).save(usersArgumentCaptor.capture());
-//
-//        Users capturedUser = usersArgumentCaptor.getValue();
-//        assertEquals(capturedUser.getEmail(), userResponse.email());
-//        assertEquals(capturedUser.getFirstName(), userResponse.firstName());
-//        assertEquals(capturedUser.getLastName(), userResponse.lastName());
-//        assertEquals(capturedUser.getPhoneNumber(), userResponse.phoneNumber());
-//        assertEquals(capturedUser.getProfileImageUrl(), userResponse.profileImageUrl());
-//        assertEquals(capturedUser.getGender(), userResponse.gender());
-//        assertEquals(capturedUser.getRole().getId(), userResponse.roleId());
-//    }
+    @Test
+    void createUserRunsFineWhenUserNotPresent() {
+        String email = "test@email.com";
+        UserRequest userRequest = new UserRequest(
+                email, "password",
+                "John", "Cena",
+                "0987654321", "",
+                Gender.MALE,
+                ""
+        );
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+        
+        Users savedUser = Users.builder()
+                .id("123")
+                .email(email)
+                .firstName("John")
+                .lastName("Cena")
+                .phoneNumber("0987654321")
+                .profileImageUrl("")
+                .gender(Gender.MALE)
+                .build();
+        
+        UserResponse expectedResponse = new UserResponse(
+                "123", email, "John", "Cena",
+                "0987654321", "", Gender.MALE,
+                "", null, null
+        );
+        
+        when(userRepository.save(org.mockito.ArgumentMatchers.any(Users.class))).thenReturn(savedUser);
+        when(userMapper.apply(savedUser)).thenReturn(expectedResponse);
+
+        UserResponse userResponse = underTest.createUser(userRequest);
+
+        ArgumentCaptor<Users> usersArgumentCaptor = ArgumentCaptor.forClass(Users.class);
+        verify(userRepository).save(usersArgumentCaptor.capture());
+
+        Users capturedUser = usersArgumentCaptor.getValue();
+        assertEquals(capturedUser.getEmail(), userResponse.email());
+        assertEquals(capturedUser.getFirstName(), userResponse.firstName());
+        assertEquals(capturedUser.getLastName(), userResponse.lastName());
+        assertEquals(capturedUser.getPhoneNumber(), userResponse.phoneNumber());
+        assertEquals(capturedUser.getProfileImageUrl(), userResponse.profileImageUrl());
+        assertEquals(capturedUser.getGender(), userResponse.gender());
+        assertEquals(capturedUser.getRole().getId(), userResponse.roleId());
+    }
 
     @Test
     void getUserById() {

@@ -1,7 +1,7 @@
 package com.naren.backend.DTO.mapper;
 
 import com.naren.backend.Entity.Schedule;
-import com.naren.backend.Record.ScheduleResponse;
+import com.naren.backend.DTO.ScheduleResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

@@ -1,7 +1,7 @@
 package com.naren.backend.DTO.mapper;
 
 import com.naren.backend.Entity.BookingSeat;
-import com.naren.backend.Record.BookingSeatResponse;
+import com.naren.backend.DTO.BookingSeatResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

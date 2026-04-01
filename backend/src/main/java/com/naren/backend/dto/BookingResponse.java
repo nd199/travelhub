@@ -1,4 +1,4 @@
-package com.naren.backend.Record;
+package com.naren.backend.DTO;
 
 import java.time.LocalDateTime;
 

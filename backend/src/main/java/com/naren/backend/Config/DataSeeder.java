@@ -228,6 +228,7 @@ public class DataSeeder implements CommandLineRunner {
                     .bookingReference("BK" + faker.regexify("[A-Z0-9]{8}"))
                     .user(user)
                     .schedule(schedule)
+                    .travelDate(schedule.getDepartureTime())
                     .status(faker.random().nextBoolean() ? BookingStatus.CONFIRMED : BookingStatus.PENDING)
                     .totalAmount(faker.number().randomDouble(2, 500, 5000))
                     .discountAmount(faker.number().randomDouble(2, 0, 200))

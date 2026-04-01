@@ -51,6 +51,24 @@ public class Payment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "refund_amount")
+    private Double refundAmount;
+
+    @Column(name = "refund_date")
+    private LocalDateTime refundDate;
+
+    @Column(name = "refund_reason")
+    private String refundReason;
+
+    @Column(name = "payment_failure_reason")
+    private String paymentFailureReason;
+
+    @Column(name = "retry_count")
+    private Integer retryCount = 0;
+
+    @Column(name = "partial_payment")
+    private Boolean partialPayment = false;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

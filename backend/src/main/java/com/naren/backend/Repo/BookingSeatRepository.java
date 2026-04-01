@@ -11,4 +11,6 @@ public interface BookingSeatRepository extends JpaRepository<BookingSeat, String
     List<BookingSeat> findByBookingId(String bookingId);
 
     List<BookingSeat> findBySeatId(String seatId);
+
+
 }

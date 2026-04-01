@@ -59,6 +59,27 @@ public class Booking {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "travel_date", nullable = false)
+    private LocalDateTime travelDate;
+
+    @Column(name = "booking_source")
+    private String bookingSource; // WEB, MOBILE, AGENT, etc.
+
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
+    @Column(name = "cancellation_reason")
+    private String cancellationReason;
+
+    @Column(name = "refund_amount")
+    private Double refundAmount;
+
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
+
+    @Column(name = "modification_reason")
+    private String modificationReason;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

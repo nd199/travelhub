@@ -55,6 +55,24 @@ public class Schedule {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "schedule_code")
+    private String scheduleCode; // Unique schedule identifier
+
+    @Column(name = "delay_minutes")
+    private Integer delayMinutes = 0;
+
+    @Column(name = "delay_reason")
+    private String delayReason;
+
+    @Column(name = "actual_arrival_delay")
+    private Integer actualArrivalDelay = 0;
+
+    @Column(name = "gate_number")
+    private String gateNumber;
+
+    @Column(name = "platform_number")
+    private String platformNumber;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

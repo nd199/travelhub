@@ -55,6 +55,27 @@ public class Passenger {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "special_requirements")
+    private String specialRequirements; // wheelchair, meal preferences, etc.
+
+    @Column(name = "emergency_contact_name")
+    private String emergencyContactName;
+
+    @Column(name = "emergency_contact_number")
+    private String emergencyContactNumber;
+
+    @Column(name = "baggage_allowance")
+    private Integer baggageAllowance;
+
+    @Column(name = "checked_in")
+    private Boolean checkedIn = false;
+
+    @Column(name = "check_in_time")
+    private LocalDateTime checkInTime;
+
+    @Column(name = "seat_preference")
+    private String seatPreference; // window, aisle, etc.
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

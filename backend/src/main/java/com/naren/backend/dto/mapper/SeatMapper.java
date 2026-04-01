@@ -1,7 +1,7 @@
 package com.naren.backend.DTO.mapper;
 
 import com.naren.backend.Entity.Seat;
-import com.naren.backend.Record.SeatResponse;
+import com.naren.backend.DTO.SeatResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
