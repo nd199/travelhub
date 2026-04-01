@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "passengers")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
