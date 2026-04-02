@@ -30,15 +30,15 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
 
     List<Payment> findByStatusAndCreatedAtBetween(PaymentStatus status, LocalDateTime start, LocalDateTime end);
     
-    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = :status")
+    @Query(value = "SELECT SUM(p.amount) FROM Payment p WHERE p.status = :status", nativeQuery = true)
     Double sumAmountByStatus(@Param("status") PaymentStatus status);
     
-    @Query("SELECT COUNT(p) FROM Payment p WHERE p.gatewayName = :gatewayName")
+    @Query(value = "SELECT COUNT(p) FROM Payment p WHERE p.gateway_name = :gatewayName", nativeQuery = true)
     Long countByGatewayName(@Param("gatewayName") String gatewayName);
     
-    @Query("SELECT p FROM Payment p WHERE p.booking.id = :bookingId AND p.status = 'COMPLETED'")
+    @Query(value = "SELECT p FROM Payment p WHERE p.booking_id = :bookingId AND p.status = 'COMPLETED'", nativeQuery = true)
     List<Payment> findCompletedPaymentsByBookingId(@Param("bookingId") String bookingId);
     
-    @Query("SELECT p FROM Payment p WHERE p.createdAt BETWEEN :start AND :end ORDER BY p.createdAt DESC")
+    @Query(value = "SELECT p FROM Payment p WHERE p.created_at BETWEEN :start AND :end ORDER BY p.created_at DESC", nativeQuery = true)
     List<Payment> findPaymentsInDateRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

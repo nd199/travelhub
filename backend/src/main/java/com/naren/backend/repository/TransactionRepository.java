@@ -29,20 +29,23 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     
     List<Transaction> findByStatusAndGatewayName(PaymentStatus status, String gatewayName);
     
-    Double sumAmountByGateway(String gatewayName);
+    @Query(value = "SELECT SUM(t.amount) FROM Transaction t WHERE t.gatewayName = :gatewayName", nativeQuery = true)
+    Double sumAmountByGateway(@Param("gatewayName") String gatewayName);
     
     Long countByStatus(PaymentStatus status);
     
+    @Query(value = "SELECT t FROM Transaction t WHERE t.status = 'FAILED'", nativeQuery = true)
     List<Transaction> findFailedTransactions();
     
+    @Query(value = "SELECT t FROM Transaction t WHERE t.status = 'COMPLETED'", nativeQuery = true)
     List<Transaction> findSuccessfulTransactions();
     
-    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.gatewayName = :gatewayName AND t.status = 'COMPLETED'")
+    @Query(value = "SELECT SUM(t.amount) FROM Transaction t WHERE t.gatewayName = :gatewayName AND t.status = 'COMPLETED'", nativeQuery = true)
     Double sumSuccessfulAmountByGateway(@Param("gatewayName") String gatewayName);
     
-    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.status = :status AND t.createdAt BETWEEN :start AND :end")
+    @Query(value = "SELECT COUNT(t) FROM Transaction t WHERE t.status = :status AND t.created_at BETWEEN :start AND :end", nativeQuery = true)
     Long countByStatusAndDateRange(@Param("status") PaymentStatus status, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
     
-    @Query("SELECT t FROM Transaction t WHERE t.payment.id = :paymentId ORDER BY t.createdAt DESC")
+    @Query(value = "SELECT t FROM Transaction t WHERE t.payment_id = :paymentId ORDER BY t.created_at DESC", nativeQuery = true)
     List<Transaction> findByPaymentIdOrderByCreatedAtDesc(@Param("paymentId") String paymentId);
 }

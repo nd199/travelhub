@@ -15,8 +15,6 @@ import com.naren.backend.repository.RoleRepository;
 import com.naren.backend.exception.AuthenticationException;
 import com.naren.backend.repository.UserRepository;
 import com.naren.backend.service.UserServiceInterface;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,14 +30,12 @@ public class UserServiceImpl implements UserServiceInterface {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userMapper = userMapper;
-        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
@@ -55,7 +51,7 @@ public class UserServiceImpl implements UserServiceInterface {
                 .firstName(userRequest.firstName())
                 .lastName(userRequest.lastName())
                 .email(userRequest.email())
-                .password(passwordEncoder.encode(userRequest.password()))
+                .password(userRequest.password())
                 .build();
 
         Users savedUser = userRepository.save(user);
@@ -180,12 +176,12 @@ public class UserServiceImpl implements UserServiceInterface {
                     return new ResourceNotFoundException("User not found with email: " + email);
                 });
         
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+        if (!currentPassword.equals(user.getPassword())) {
             logger.error("Current password is incorrect for user: {}", email);
             throw new AuthenticationException("Current password is incorrect");
         }
         
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(newPassword);
         userRepository.save(user);
         logger.info("Password changed successfully for user: {}", email);
     }
@@ -238,7 +234,7 @@ public class UserServiceImpl implements UserServiceInterface {
     @Override
     public Long getUserCountByRole(String roleName) {
         logger.info("Getting user count by role: {}", roleName);
-        return userRepository.countByRole(roleName);
+        return userRepository.countByRoleName(roleName);
     }
 
     @Override

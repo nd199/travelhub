@@ -25,19 +25,20 @@ public interface SeatRepository extends JpaRepository<Seat, String> {
     
     List<Seat> findBySeatNumber(String seatNumber);
     
-    List<Seat> findAvailableSeats(String vehicleId);
+    @Query(value = "SELECT s FROM Seat s WHERE s.vehicle_id = :vehicleId AND s.status = 'AVAILABLE'", nativeQuery = true)
+    List<Seat> findAvailableSeats(@Param("vehicleId") String vehicleId);
     
     List<Seat> findByVehicleIdAndTypeAndStatus(String vehicleId, String type, SeatStatus status);
     
-    @Query("SELECT s FROM Seat s WHERE s.vehicle.id = :vehicleId AND s.status = 'AVAILABLE' ORDER BY s.price ASC")
+    @Query(value = "SELECT s FROM Seat s WHERE s.vehicle_id = :vehicleId AND s.status = 'AVAILABLE' ORDER BY s.price ASC", nativeQuery = true)
     List<Seat> findAvailableSeatsOrderByPrice(@Param("vehicleId") String vehicleId);
     
-    @Query("SELECT COUNT(s) FROM Seat s WHERE s.vehicle.id = :vehicleId AND s.status = :status")
+    @Query(value = "SELECT COUNT(s) FROM Seat s WHERE s.vehicle_id = :vehicleId AND s.status = :status", nativeQuery = true)
     Long countByVehicleIdAndStatus(@Param("vehicleId") String vehicleId, @Param("status") SeatStatus status);
     
-    @Query("SELECT s FROM Seat s WHERE s.type = :type AND s.price BETWEEN :minPrice AND :maxPrice")
+    @Query(value = "SELECT s FROM Seat s WHERE s.type = :type AND s.price BETWEEN :minPrice AND :maxPrice", nativeQuery = true)
     List<Seat> findByTypeAndPriceRange(@Param("type") String type, @Param("minPrice") double minPrice, @Param("maxPrice") double maxPrice);
     
-    @Query("SELECT s FROM Seat s WHERE s.seatNumber LIKE CONCAT('%', :seatNumber, '%')")
+    @Query(value = "SELECT s FROM Seat s WHERE s.seat_number LIKE CONCAT('%', :seatNumber, '%')", nativeQuery = true)
     List<Seat> findBySeatNumberContaining(@Param("seatNumber") String seatNumber);
 }

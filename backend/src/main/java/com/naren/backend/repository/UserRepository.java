@@ -17,7 +17,8 @@ public interface UserRepository extends JpaRepository<Users, String> {
     
     Optional<Users> findByPhoneNumber(String phoneNumber);
     
-    List<Users> findByRole(String roleName);
+    @Query(value = "SELECT u FROM Users u WHERE u.role_name = :roleName", nativeQuery = true)
+    List<Users> findByRole(@Param("roleName") String roleName);
     
     List<Users> findByGender(Gender gender);
     
@@ -25,7 +26,7 @@ public interface UserRepository extends JpaRepository<Users, String> {
     
     List<Users> findByLastNameContaining(String lastName);
     
-    Long countByRole(String roleName);
+    Long countByRoleName(@Param("roleName") String roleName);
     
     List<Users> findByActive(boolean active);
     
@@ -35,9 +36,6 @@ public interface UserRepository extends JpaRepository<Users, String> {
     
     boolean existsByPhoneNumber(String phoneNumber);
     
-    @Query("SELECT u FROM Users u WHERE u.email = :email AND u.active = true")
+    @Query(value = "SELECT u FROM Users u WHERE u.email = :email AND u.active = true", nativeQuery = true)
     Optional<Users> findActiveUserByEmail(@Param("email") String email);
-    
-    @Query("SELECT COUNT(u) FROM Users u WHERE u.role.name = :roleName")
-    Long countByRoleName(@Param("roleName") String roleName);
 }

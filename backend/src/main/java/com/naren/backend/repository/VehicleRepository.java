@@ -28,7 +28,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
     
     List<Vehicle> findByAmenitiesContaining(String amenity);
     
-    List<Vehicle> findAvailableVehicles(LocalDateTime startTime, LocalDateTime endTime);
+    @Query(value = "SELECT v FROM Vehicle v WHERE v.status = 'ACTIVE' AND v.id NOT IN " +
+           "(SELECT s.vehicle_id FROM Schedule s WHERE s.departure_time BETWEEN :startTime AND :endTime)", nativeQuery = true)
+    List<Vehicle> findAvailableVehicles(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
     
     List<Vehicle> findByTypeAndCapacityGreaterThan(VehicleType type, int minCapacity);
     
@@ -38,10 +40,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String> {
     
     List<Vehicle> findByNameContaining(String name);
     
-    @Query("SELECT v FROM Vehicle v WHERE v.status = 'ACTIVE' AND v.id NOT IN " +
-           "(SELECT s.vehicle.id FROM Schedule s WHERE s.departureTime BETWEEN :start AND :end)")
+    @Query(value = "SELECT v FROM Vehicle v WHERE v.status = 'ACTIVE' AND v.id NOT IN " +
+           "(SELECT s.vehicle_id FROM Schedule s WHERE s.departure_time BETWEEN :start AND :end)", nativeQuery = true)
     List<Vehicle> findAvailableVehiclesInTimeRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
     
-    @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.type = :type AND v.status = :status")
+    @Query(value = "SELECT COUNT(v) FROM Vehicle v WHERE v.type = :type AND v.status = :status", nativeQuery = true)
     Long countByTypeAndStatus(@Param("type") VehicleType type, @Param("status") VehicleStatus status);
 }

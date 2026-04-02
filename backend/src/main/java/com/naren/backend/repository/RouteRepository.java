@@ -23,6 +23,7 @@ public interface RouteRepository extends JpaRepository<Route, String> {
     
     List<Route> findByEstimatedDurationMinutesBetween(int minDuration, int maxDuration);
     
+    @Query(value = "SELECT r FROM Route r JOIN Booking b ON r.id = b.schedule.route_id GROUP BY r.id ORDER BY COUNT(b.id) DESC", nativeQuery = true)
     List<Route> findPopularRoutes(int limit);
     
     List<Route> findByDistanceKmLessThan(double maxDistance);
@@ -31,12 +32,12 @@ public interface RouteRepository extends JpaRepository<Route, String> {
     
     List<Route> findByDestinationCity(String destinationCity);
     
-    @Query("SELECT r FROM Route r WHERE r.source.city = :sourceCity AND r.destination.city = :destCity")
+    @Query(value = "SELECT r FROM Route r WHERE r.source_city = :sourceCity AND r.destination_city = :destCity", nativeQuery = true)
     List<Route> findByCities(@Param("sourceCity") String sourceCity, @Param("destCity") String destCity);
     
-    @Query("SELECT r FROM Route r WHERE r.status = 'ACTIVE' ORDER BY r.distanceKm ASC")
+    @Query(value = "SELECT r FROM Route r WHERE r.status = 'ACTIVE' ORDER BY r.distance_km ASC", nativeQuery = true)
     List<Route> findActiveRoutesOrderByDistance();
     
-    @Query("SELECT COUNT(r) FROM Route r WHERE r.source.id = :sourceId")
+    @Query(value = "SELECT COUNT(r) FROM Route r WHERE r.source_id = :sourceId", nativeQuery = true)
     Long countBySourceId(@Param("sourceId") String sourceId);
 }

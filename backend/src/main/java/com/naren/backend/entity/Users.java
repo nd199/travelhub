@@ -11,8 +11,7 @@ import java.util.UUID;
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(
         name = "unique_email", columnNames = "email"
 )})
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -47,6 +46,9 @@ public class Users {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @Column(name = "active")
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings;

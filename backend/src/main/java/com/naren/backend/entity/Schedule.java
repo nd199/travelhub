@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "schedules")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -56,6 +55,7 @@ public class Schedule {
     private LocalDateTime updatedAt;
 
     @Column(name = "schedule_code")
+    private String scheduleCode;
 
     @Column(name = "delay_minutes")
     private Integer delayMinutes = 0;

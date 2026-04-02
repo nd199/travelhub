@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "passengers")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -56,6 +55,7 @@ public class Passenger {
     private LocalDateTime updatedAt;
 
     @Column(name = "special_requirements")
+    private String specialRequirements;
 
     @Column(name = "emergency_contact_name")
     private String emergencyContactName;
@@ -73,6 +73,7 @@ public class Passenger {
     private LocalDateTime checkInTime;
 
     @Column(name = "seat_preference")
+    private String seatPreference;
 
     @PrePersist
     public void prePersist() {

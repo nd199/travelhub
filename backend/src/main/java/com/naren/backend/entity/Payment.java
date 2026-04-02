@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -35,6 +34,9 @@ public class Payment {
 
     @Column(name = "method", nullable = false)
     private String method;
+
+    @Column(name = "gateway_name")
+    private String gatewayName;
 
     @Column(name = "transaction_reference")
     private String transactionReference;
