@@ -1,7 +1,7 @@
-package com.naren.backend.DTO.mapper;
+package com.naren.backend.dto.mapper;
 
-import com.naren.backend.Entity.Users;
-import com.naren.backend.DTO.UserResponse;
+import com.naren.backend.entity.Users;
+import com.naren.backend.dto.UserResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

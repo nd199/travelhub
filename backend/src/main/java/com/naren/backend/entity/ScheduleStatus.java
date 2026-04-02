@@ -1,4 +1,4 @@
-package com.naren.backend.Entity;
+package com.naren.backend.entity;
 
 public enum ScheduleStatus {
     SCHEDULED,

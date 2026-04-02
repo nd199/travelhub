@@ -1,4 +1,4 @@
-package com.naren.backend.Entity;
+package com.naren.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +8,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "passengers")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -55,7 +56,6 @@ public class Passenger {
     private LocalDateTime updatedAt;
 
     @Column(name = "special_requirements")
-    private String specialRequirements; // wheelchair, meal preferences, etc.
 
     @Column(name = "emergency_contact_name")
     private String emergencyContactName;
@@ -73,7 +73,6 @@ public class Passenger {
     private LocalDateTime checkInTime;
 
     @Column(name = "seat_preference")
-    private String seatPreference; // window, aisle, etc.
 
     @PrePersist
     public void prePersist() {

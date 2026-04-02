@@ -1,4 +1,4 @@
-package com.naren.backend.Entity;
+package com.naren.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -63,7 +63,7 @@ public class Booking {
     private LocalDateTime travelDate;
 
     @Column(name = "booking_source")
-    private String bookingSource; // WEB, MOBILE, AGENT, etc.
+    private String bookingSource;
 
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;

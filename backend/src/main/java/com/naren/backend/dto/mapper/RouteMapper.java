@@ -1,7 +1,7 @@
-package com.naren.backend.DTO.mapper;
+package com.naren.backend.dto.mapper;
 
-import com.naren.backend.Entity.Route;
-import com.naren.backend.DTO.RouteResponse;
+import com.naren.backend.entity.Route;
+import com.naren.backend.dto.RouteResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

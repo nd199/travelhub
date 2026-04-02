@@ -1,6 +1,6 @@
-package com.naren.backend.DTO;
+package com.naren.backend.dto;
 
-import com.naren.backend.Entity.Gender;
+import com.naren.backend.entity.Gender;
 
 import java.time.LocalDateTime;
 

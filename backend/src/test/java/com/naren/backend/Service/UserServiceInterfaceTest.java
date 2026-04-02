@@ -1,14 +1,14 @@
-package com.naren.backend.Service;
+package com.naren.backend.service;
 
-import com.naren.backend.DTO.UserResponse;
-import com.naren.backend.DTO.mapper.UserMapper;
-import com.naren.backend.Entity.Gender;
-import com.naren.backend.Entity.Users;
-import com.naren.backend.Exception.ResourceNotFoundException;
-import com.naren.backend.Record.UserRequest;
-import com.naren.backend.Repo.RoleRepository;
-import com.naren.backend.Repo.UserRepository;
-import com.naren.backend.Service.impl.UserServiceImpl;
+import com.naren.backend.dto.UserResponse;
+import com.naren.backend.dto.mapper.UserMapper;
+import com.naren.backend.entity.Gender;
+import com.naren.backend.entity.Users;
+import com.naren.backend.exception.ResourceNotFoundException;
+import com.naren.backend.record.UserRequest;
+import com.naren.backend.repository.RoleRepository;
+import com.naren.backend.repository.UserRepository;
+import com.naren.backend.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

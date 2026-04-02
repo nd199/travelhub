@@ -1,8 +1,8 @@
-package com.naren.backend.Config;
+package com.naren.backend.config;
 
 import com.github.javafaker.Faker;
-import com.naren.backend.Entity.*;
-import com.naren.backend.Repo.*;
+import com.naren.backend.entity.*;
+import com.naren.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -44,25 +44,19 @@ public class DataSeeder implements CommandLineRunner {
             seedRoutes();
             seedSchedules();
             seedBookings();
-            log.info("Database seeding completed!");
-        } else {
-            log.info("Database already contains data. Skipping seeding.");
         }
     }
 
     private void seedRoles() {
-        log.info("Seeding roles...");
         List<Role> roles = Arrays.asList(
                 Role.builder().name("ADMIN").description("System Administrator").build(),
                 Role.builder().name("CUSTOMER").description("Regular Customer").build(),
                 Role.builder().name("OPERATOR").description("Transport Operator").build()
         );
         roleRepository.saveAll(roles);
-        log.info("Seeded {} roles", roles.size());
     }
 
     private void seedLocations() {
-        log.info("Seeding locations...");
         List<Location> locations = new ArrayList<>();
 
         String[] cities = {"Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad", "Jaipur", "Lucknow"};
@@ -83,11 +77,9 @@ public class DataSeeder implements CommandLineRunner {
             locations.add(location);
         }
         locationRepository.saveAll(locations);
-        log.info("Seeded {} locations", locations.size());
     }
 
     private void seedVehicles() {
-        log.info("Seeding vehicles...");
         List<Vehicle> vehicles = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
@@ -103,8 +95,6 @@ public class DataSeeder implements CommandLineRunner {
         }
         vehicleRepository.saveAll(vehicles);
 
-        // Create seats for each vehicle
-        log.info("Seeding seats...");
         List<Seat> allSeats = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
             for (int i = 1; i <= vehicle.getCapacity(); i++) {
@@ -119,18 +109,15 @@ public class DataSeeder implements CommandLineRunner {
             }
         }
         seatRepository.saveAll(allSeats);
-        log.info("Seeded {} vehicles with {} seats", vehicles.size(), allSeats.size());
     }
 
     private void seedUsers() {
-        log.info("Seeding users...");
         List<Role> roles = roleRepository.findAll();
         Role customerRole = roles.stream().filter(r -> r.getName().equals("CUSTOMER")).findFirst().orElse(roles.get(1));
         Role adminRole = roles.stream().filter(r -> r.getName().equals("ADMIN")).findFirst().orElse(roles.get(0));
 
         List<Users> users = new ArrayList<>();
 
-        // Create admin user
         Users admin = Users.builder()
                 .email("admin@travelhub.com")
                 .password("admin123")
@@ -142,7 +129,6 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
         users.add(admin);
 
-        // Create customer users
         for (int i = 0; i < 10; i++) {
             Users user = Users.builder()
                     .email(faker.internet().emailAddress())
@@ -156,11 +142,9 @@ public class DataSeeder implements CommandLineRunner {
             users.add(user);
         }
         userRepository.saveAll(users);
-        log.info("Seeded {} users", users.size());
     }
 
     private void seedRoutes() {
-        log.info("Seeding routes...");
         List<Location> locations = locationRepository.findAll();
         List<Route> routes = new ArrayList<>();
 
@@ -176,11 +160,9 @@ public class DataSeeder implements CommandLineRunner {
             routes.add(route);
         }
         routeRepository.saveAll(routes);
-        log.info("Seeded {} routes", routes.size());
     }
 
     private void seedSchedules() {
-        log.info("Seeding schedules...");
         List<Route> routes = routeRepository.findAll();
         List<Vehicle> vehicles = vehicleRepository.findAll();
         List<Schedule> schedules = new ArrayList<>();
@@ -205,11 +187,9 @@ public class DataSeeder implements CommandLineRunner {
             }
         }
         scheduleRepository.saveAll(schedules);
-        log.info("Seeded {} schedules", schedules.size());
     }
 
     private void seedBookings() {
-        log.info("Seeding bookings...");
         List<Users> users = userRepository.findAll();
         List<Schedule> schedules = scheduleRepository.findAll();
         List<Seat> seats = seatRepository.findAll();
@@ -237,7 +217,6 @@ public class DataSeeder implements CommandLineRunner {
                     .build();
             bookings.add(booking);
 
-            // Create passengers for booking
             int passengerCount = faker.number().numberBetween(1, 4);
             for (int j = 0; j < passengerCount; j++) {
                 Passenger passenger = Passenger.builder()
@@ -254,7 +233,6 @@ public class DataSeeder implements CommandLineRunner {
                 passengers.add(passenger);
             }
 
-            // Create payment for booking
             Payment payment = Payment.builder()
                     .booking(booking)
                     .amount(booking.getFinalAmount())
@@ -267,7 +245,6 @@ public class DataSeeder implements CommandLineRunner {
                     .build();
             payments.add(payment);
 
-            // Create transaction for payment
             Transaction transaction = Transaction.builder()
                     .payment(payment)
                     .transactionReference("TRX" + faker.regexify("[A-Z0-9]{12}"))
@@ -285,8 +262,5 @@ public class DataSeeder implements CommandLineRunner {
         passengerRepository.saveAll(passengers);
         paymentRepository.saveAll(payments);
         transactionRepository.saveAll(transactions);
-
-        log.info("Seeded {} bookings, {} passengers, {} payments, {} transactions",
-                bookings.size(), passengers.size(), payments.size(), transactions.size());
     }
 }

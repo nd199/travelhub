@@ -1,6 +1,6 @@
-package com.naren.backend.Record;
+package com.naren.backend.record;
 
-import com.naren.backend.Entity.Gender;
+import com.naren.backend.entity.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package com.naren.backend.Record;
+package com.naren.backend.record;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

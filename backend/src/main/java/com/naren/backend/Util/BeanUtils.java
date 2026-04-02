@@ -1,4 +1,4 @@
-package com.naren.backend.Util;
+package com.naren.backend.util;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

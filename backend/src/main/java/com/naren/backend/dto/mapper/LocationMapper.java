@@ -1,7 +1,7 @@
-package com.naren.backend.DTO.mapper;
+package com.naren.backend.dto.mapper;
 
-import com.naren.backend.Entity.Location;
-import com.naren.backend.DTO.LocationResponse;
+import com.naren.backend.entity.Location;
+import com.naren.backend.dto.LocationResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

@@ -1,4 +1,4 @@
-@package com.naren.backend.service;
+package com.naren.backend.service;
 
 import com.naren.backend.dto.mapper.VehicleMapper;
 import com.naren.backend.entity.Vehicle;
@@ -34,14 +34,11 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
     @Override
     public VehicleResponse createVehicle(VehicleRequest vehicleRequest) {
-        logger.info("Creating vehicle with registration number: {}", vehicleRequest.registrationNumber());
         if(vehicleRepository.existsByRegistrationNumber(vehicleRequest.registrationNumber())) {
-            logger.error("Vehicle already exists with registration number: {}", vehicleRequest.registrationNumber());
-            throw new DuplicateResourceException("Vehicle already exists with registration number: " + vehicleRequest.registrationNumber());
+            throw new DuplicateResourceException("Vehicle already exists with registration: " + vehicleRequest.registrationNumber());
         }
 
-        Vehicle vehicle = Vehicle
-                .builder()
+        Vehicle vehicle = Vehicle.builder()
                 .name(vehicleRequest.name())
                 .type(parseVehicleType(vehicleRequest.type()))
                 .capacity(vehicleRequest.capacity())
@@ -50,42 +47,29 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
                 .registrationNumber(vehicleRequest.registrationNumber())
                 .build();
 
-        Vehicle savedVehicle = vehicleRepository.save(vehicle);
-        logger.info("Vehicle created successfully with id: {}", savedVehicle.getId());
-        return vehicleMapper.apply(savedVehicle);
+        return vehicleMapper.apply(vehicleRepository.save(vehicle));
     }
 
     @Override
     public VehicleResponse getVehicleById(String id) {
-        logger.info("Fetching vehicle by id: {}", id);
         return vehicleMapper.apply(vehicleRepository.findById(id).orElseThrow(
-                () -> {
-                    logger.error("Vehicle not found with id: {}", id);
-                    return new ResourceNotFoundException("Vehicle Not Found");
-                }
+                () -> new ResourceNotFoundException("Vehicle not found")
         ));
     }
 
     @Override
     public VehicleResponse getVehicleByRegistrationNumber(String registrationNumber) {
-        logger.info("Fetching vehicle by registration number: {}", registrationNumber);
         return vehicleMapper.apply(vehicleRepository.findByRegistrationNumber(registrationNumber)
                 .orElseThrow(
-                        () -> {
-                            logger.error("Vehicle not found with registration number: {}", registrationNumber);
-                            return new ResourceNotFoundException("Vehicle Not Found");
-                        }
+                        () -> new ResourceNotFoundException("Vehicle not found")
                 ));
     }
 
     @Override
     public List<VehicleResponse> getAllVehicles() {
-        logger.info("Fetching all vehicles");
-        List<VehicleResponse> vehicles = vehicleRepository.findAll().stream()
+        return vehicleRepository.findAll().stream()
                 .map(vehicleMapper)
                 .toList();
-        logger.info("Retrieved {} vehicles", vehicles.size());
-        return vehicles;
     }
 
     @Override
@@ -108,79 +92,45 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
     @Override
     public VehicleResponse updateVehicle(String id, VehicleRequest vehicleRequest) {
-        logger.info("Updating vehicle with id: {}", id);
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Vehicle not found with id: {}", id);
-                    return new ResourceNotFoundException("Vehicle not found with id: " + id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + id));
 
-        boolean needsUpdate = false;
-
-        if(Objects.nonNull(vehicleRequest.name()) &&
-                !Objects.equals(vehicleRequest.name(), vehicle.getName())) {
+        if(vehicleRequest.name() != null) {
             vehicle.setName(vehicleRequest.name());
-            needsUpdate = true;
         }
 
-        if(Objects.nonNull(vehicleRequest.type())) {
-            VehicleType type = parseVehicleType(vehicleRequest.type());
-            if(!Objects.equals(type, vehicle.getType())) {
-                vehicle.setType(type);
-                needsUpdate = true;
-            }
+        if(vehicleRequest.type() != null) {
+            vehicle.setType(parseVehicleType(vehicleRequest.type()));
         }
 
-        if(Objects.nonNull(vehicleRequest.capacity()) &&
-                !Objects.equals(vehicleRequest.capacity(), vehicle.getCapacity())) {
+        if(vehicleRequest.capacity() != null) {
             vehicle.setCapacity(vehicleRequest.capacity());
-            needsUpdate = true;
         }
 
-        if(Objects.nonNull(vehicleRequest.amenities()) &&
-                !Objects.equals(vehicleRequest.amenities(), vehicle.getAmenities())) {
+        if(vehicleRequest.amenities() != null) {
             vehicle.setAmenities(vehicleRequest.amenities());
-            needsUpdate = true;
         }
 
-        if(Objects.nonNull(vehicleRequest.status())) {
-            VehicleStatus status = parseVehicleStatus(vehicleRequest.status());
-            if(!Objects.equals(status, vehicle.getStatus())) {
-                vehicle.setStatus(status);
-                needsUpdate = true;
+        if(vehicleRequest.status() != null) {
+            vehicle.setStatus(parseVehicleStatus(vehicleRequest.status()));
+        }
+
+        if(vehicleRequest.registrationNumber() != null &&
+           !vehicleRequest.registrationNumber().equals(vehicle.getRegistrationNumber())) {
+            if(vehicleRepository.existsByRegistrationNumber(vehicleRequest.registrationNumber())) {
+                throw new DuplicateResourceException("Vehicle already exists with registration: " + vehicleRequest.registrationNumber());
             }
-        }
-
-        if(Objects.nonNull(vehicleRequest.registrationNumber()) &&
-                !Objects.equals(vehicleRequest.registrationNumber(), vehicle.getRegistrationNumber())) {
-        if(vehicleRepository.existsByRegistrationNumber(vehicleRequest.registrationNumber())) {
-            logger.error("Vehicle already exists with registration number: {}", vehicleRequest.registrationNumber());
-            throw new DuplicateResourceException("Vehicle already exists with registration number: " + vehicleRequest.registrationNumber());
-        }
             vehicle.setRegistrationNumber(vehicleRequest.registrationNumber());
-            needsUpdate = true;
         }
 
-        if(needsUpdate) {
-            vehicleRepository.save(vehicle);
-            logger.info("Vehicle updated successfully with id: {}", id);
-        } else {
-            logger.info("No changes detected for vehicle id: {}", id);
-        }
-
-        return vehicleMapper.apply(vehicle);
+        return vehicleMapper.apply(vehicleRepository.save(vehicle));
     }
 
     @Override
     public void deleteVehicle(String id) {
-        logger.info("Deleting vehicle with id: {}", id);
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Vehicle not found with id: {}", id);
-                    return new ResourceNotFoundException("Vehicle not found with id: " + id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + id));
         vehicleRepository.delete(vehicle);
-        logger.info("Vehicle deleted successfully with id: {}", id);
     }
 
     @Override
@@ -265,34 +215,24 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
     }
 
     private VehicleType parseVehicleType(String type) {
-        logger.debug("Parsing vehicle type: {}", type);
         if (type == null || type.trim().isEmpty()) {
-            logger.error("Vehicle type cannot be null or empty");
-            throw new InvalidInputException("Vehicle type cannot be null or empty");
+            throw new InvalidInputException("Vehicle type cannot be empty");
         }
         try {
-            VehicleType result = VehicleType.valueOf(type.trim().toUpperCase());
-            logger.debug("Parsed vehicle type: {}", result);
-            return result;
+            return VehicleType.valueOf(type.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid vehicle type: {}", type);
-            throw new InvalidInputException("Invalid vehicle type: " + type + ". Valid types are: " + java.util.Arrays.toString(VehicleType.values()));
+            throw new InvalidInputException("Invalid vehicle type: " + type);
         }
     }
 
     private VehicleStatus parseVehicleStatus(String status) {
-        logger.debug("Parsing vehicle status: {}", status);
         if (status == null || status.trim().isEmpty()) {
-            logger.error("Vehicle status cannot be null or empty");
-            throw new InvalidInputException("Vehicle status cannot be null or empty");
+            throw new InvalidInputException("Vehicle status cannot be empty");
         }
         try {
-            VehicleStatus result = VehicleStatus.valueOf(status.trim().toUpperCase());
-            logger.debug("Parsed vehicle status: {}", result);
-            return result;
+            return VehicleStatus.valueOf(status.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid vehicle status: {}", status);
-            throw new InvalidInputException("Invalid vehicle status: " + status + ". Valid statuses are: " + java.util.Arrays.toString(VehicleStatus.values()));
+            throw new InvalidInputException("Invalid vehicle status: " + status);
         }
     }
 }

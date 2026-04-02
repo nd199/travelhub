@@ -1,7 +1,7 @@
-package com.naren.backend.DTO.mapper;
+package com.naren.backend.dto.mapper;
 
-import com.naren.backend.Entity.Transaction;
-import com.naren.backend.DTO.TransactionResponse;
+import com.naren.backend.entity.Transaction;
+import com.naren.backend.dto.TransactionResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

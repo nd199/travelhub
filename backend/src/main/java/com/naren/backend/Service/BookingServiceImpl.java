@@ -43,22 +43,19 @@ public class BookingServiceImpl implements BookingServiceInterface {
 
     @Override
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-        logger.info("Creating booking for user id: {}", bookingRequest.userId());
         Users user = userRepository.findById(bookingRequest.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + bookingRequest.userId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + bookingRequest.userId()));
 
         Schedule schedule = scheduleRepository.findById(bookingRequest.scheduleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with id: " + bookingRequest.scheduleId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found: " + bookingRequest.scheduleId()));
 
         String bookingReference = generateBookingReference();
         
         if(bookingRepository.existsByBookingReference(bookingReference)) {
-            logger.error("Booking already exists with reference: {}", bookingReference);
-            throw new DuplicateResourceException("Booking already exists with reference: " + bookingReference);
+            throw new DuplicateResourceException("Booking already exists: " + bookingReference);
         }
 
-        Booking booking = Booking
-                .builder()
+        Booking booking = Booking.builder()
                 .bookingReference(bookingReference)
                 .user(user)
                 .schedule(schedule)
@@ -69,42 +66,29 @@ public class BookingServiceImpl implements BookingServiceInterface {
                 .finalAmount(bookingRequest.finalAmount())
                 .build();
 
-        Booking savedBooking = bookingRepository.save(booking);
-        logger.info("Booking created successfully with reference: {}", savedBooking.getBookingReference());
-        return bookingMapper.apply(savedBooking);
+        return bookingMapper.apply(bookingRepository.save(booking));
     }
 
     @Override
     public BookingResponse getBookingById(String id) {
-        logger.info("Fetching booking by id: {}", id);
         return bookingMapper.apply(bookingRepository.findById(id).orElseThrow(
-                () -> {
-                    logger.error("Booking not found with id: {}", id);
-                    return new ResourceNotFoundException("Booking Not Found");
-                }
+                () -> new ResourceNotFoundException("Booking not found")
         ));
     }
 
     @Override
     public BookingResponse getBookingByReference(String bookingReference) {
-        logger.info("Fetching booking by reference: {}", bookingReference);
         return bookingMapper.apply(bookingRepository.findByBookingReference(bookingReference)
                 .orElseThrow(
-                        () -> {
-                            logger.error("Booking not found with reference: {}", bookingReference);
-                            return new ResourceNotFoundException("Booking Not Found");
-                        }
+                        () -> new ResourceNotFoundException("Booking not found")
                 ));
     }
 
     @Override
     public List<BookingResponse> getAllBookings() {
-        logger.info("Fetching all bookings");
-        List<BookingResponse> bookings = bookingRepository.findAll().stream()
+        return bookingRepository.findAll().stream()
                 .map(bookingMapper)
                 .toList();
-        logger.info("Retrieved {} bookings", bookings.size());
-        return bookings;
     }
 
     @Override
@@ -134,20 +118,13 @@ public class BookingServiceImpl implements BookingServiceInterface {
 
     @Override
     public BookingResponse updateBookingStatus(String id, String status) {
-        logger.info("Updating booking status for id: {} to status: {}", id, status);
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Booking not found with id: {}", id);
-                    return new ResourceNotFoundException("Booking not found with id: " + id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + id));
 
         BookingStatus newStatus = parseBookingStatus(status);
-        if(!Objects.equals(newStatus, booking.getStatus())) {
+        if(!newStatus.equals(booking.getStatus())) {
             booking.setStatus(newStatus);
             bookingRepository.save(booking);
-            logger.info("Booking status updated successfully for id: {} to {}", id, status);
-        } else {
-            logger.info("No status change needed for booking id: {}", id);
         }
 
         return bookingMapper.apply(booking);
@@ -155,14 +132,9 @@ public class BookingServiceImpl implements BookingServiceInterface {
 
     @Override
     public void deleteBooking(String id) {
-        logger.info("Deleting booking with id: {}", id);
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Booking not found with id: {}", id);
-                    return new ResourceNotFoundException("Booking not found with id: " + id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + id));
         bookingRepository.delete(booking);
-        logger.info("Booking deleted successfully with id: {}", id);
     }
 
     @Override
@@ -241,18 +213,13 @@ public class BookingServiceImpl implements BookingServiceInterface {
     }
 
     private BookingStatus parseBookingStatus(String status) {
-        logger.debug("Parsing booking status: {}", status);
         if (status == null || status.trim().isEmpty()) {
-            logger.error("Booking status cannot be null or empty");
-            throw new InvalidInputException("Booking status cannot be null or empty");
+            throw new InvalidInputException("Booking status cannot be empty");
         }
         try {
-            BookingStatus result = BookingStatus.valueOf(status.trim().toUpperCase());
-            logger.debug("Parsed booking status: {}", result);
-            return result;
+            return BookingStatus.valueOf(status.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid booking status: {}", status);
-            throw new InvalidInputException("Invalid booking status: " + status + ". Valid statuses are: " + java.util.Arrays.toString(BookingStatus.values()));
+            throw new InvalidInputException("Invalid booking status: " + status);
         }
     }
 }

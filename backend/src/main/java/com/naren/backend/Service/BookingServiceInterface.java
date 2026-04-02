@@ -1,8 +1,9 @@
-package com.naren.backend.Service;
+package com.naren.backend.service;
 
-import com.naren.backend.DTO.BookingResponse;
-import com.naren.backend.Record.BookingRequest;
+import com.naren.backend.dto.BookingResponse;
+import com.naren.backend.record.BookingRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingServiceInterface {
@@ -15,4 +16,15 @@ public interface BookingServiceInterface {
     List<BookingResponse> getBookingsByScheduleId(String scheduleId);
     BookingResponse updateBookingStatus(String id, String status);
     void deleteBooking(String id);
+    
+    List<BookingResponse> getBookingsByTravelDate(LocalDateTime travelDate);
+    List<BookingResponse> getBookingsByTravelDateBefore(LocalDateTime dateTime);
+    List<BookingResponse> getBookingsByTravelDateBetween(LocalDateTime start, LocalDateTime end);
+    List<BookingResponse> getBookingsByUserIdAndStatus(String userId, String status);
+    List<BookingResponse> getBookingsByUserIdAndTravelDateBetween(String userId, LocalDateTime start, LocalDateTime end);
+    Long getBookingCountByUserId(String userId);
+    Double getTotalRevenueByUser(String userId);
+    Double getTotalRevenueByUserOnYear(Long year, String userId);
+    Double getTotalRevenueOnYear(Long year);
+    Long getTotalBookingsOnYear(Long year);
 }

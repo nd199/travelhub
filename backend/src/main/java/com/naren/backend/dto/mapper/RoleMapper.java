@@ -1,7 +1,7 @@
-package com.naren.backend.DTO.mapper;
+package com.naren.backend.dto.mapper;
 
-import com.naren.backend.Entity.Role;
-import com.naren.backend.DTO.RoleResponse;
+import com.naren.backend.entity.Role;
+import com.naren.backend.dto.RoleResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

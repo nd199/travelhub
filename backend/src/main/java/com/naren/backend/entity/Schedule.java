@@ -1,4 +1,4 @@
-package com.naren.backend.Entity;
+package com.naren.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,7 +56,6 @@ public class Schedule {
     private LocalDateTime updatedAt;
 
     @Column(name = "schedule_code")
-    private String scheduleCode; // Unique schedule identifier
 
     @Column(name = "delay_minutes")
     private Integer delayMinutes = 0;

@@ -1,4 +1,4 @@
-package com.naren.backend.Entity;
+package com.naren.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +8,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
