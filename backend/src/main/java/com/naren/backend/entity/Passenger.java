@@ -67,6 +67,7 @@ public class Passenger {
     private Integer baggageAllowance;
 
     @Column(name = "checked_in")
+    @Builder.Default
     private Boolean checkedIn = false;
 
     @Column(name = "check_in_time")

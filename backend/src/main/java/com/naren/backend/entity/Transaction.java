@@ -29,6 +29,7 @@ public class Transaction {
     private double amount;
 
     @Column(name = "currency", nullable = false)
+    @Builder.Default
     private String currency = "INR";
 
     @Column(name = "gateway_name")

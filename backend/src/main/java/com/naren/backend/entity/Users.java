@@ -48,6 +48,7 @@ public class Users {
     private Role role;
 
     @Column(name = "active")
+    @Builder.Default
     private Boolean active = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

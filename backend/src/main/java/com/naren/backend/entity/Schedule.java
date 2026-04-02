@@ -58,12 +58,14 @@ public class Schedule {
     private String scheduleCode;
 
     @Column(name = "delay_minutes")
+    @Builder.Default
     private Integer delayMinutes = 0;
 
     @Column(name = "delay_reason")
     private String delayReason;
 
     @Column(name = "actual_arrival_delay")
+    @Builder.Default
     private Integer actualArrivalDelay = 0;
 
     @Column(name = "gate_number")

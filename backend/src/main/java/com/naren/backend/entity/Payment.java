@@ -26,6 +26,7 @@ public class Payment {
     private double amount;
 
     @Column(name = "currency", nullable = false)
+    @Builder.Default
     private String currency = "INR";
 
     @Enumerated(EnumType.STRING)
@@ -66,9 +67,11 @@ public class Payment {
     private String paymentFailureReason;
 
     @Column(name = "retry_count")
+    @Builder.Default
     private Integer retryCount = 0;
 
     @Column(name = "partial_payment")
+    @Builder.Default
     private Boolean partialPayment = false;
 
     @PrePersist
