@@ -20,8 +20,6 @@ public class OpenApiConfig {
                         .contact(new Contact()
                                 .name("Narendran")
                                 .email("naren06251999@example.com"))
-                        .license(new License()
-                                .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0.html")));
+                        .description("A TravelHub Transport Booking API"));
     }
 }
