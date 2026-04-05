@@ -11,18 +11,16 @@ import com.naren.backend.record.RouteRequest;
 import com.naren.backend.dto.RouteResponse;
 import com.naren.backend.repository.LocationRepository;
 import com.naren.backend.repository.RouteRepository;
-import com.naren.backend.service.RouteServiceInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class RouteServiceImpl implements RouteServiceInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(RouteServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(RouteServiceImpl.class);
 
     private final RouteRepository routeRepository;
     private final LocationRepository locationRepository;
@@ -42,7 +40,7 @@ public class RouteServiceImpl implements RouteServiceInterface {
         Location destinationLocation = locationRepository.findById(routeRequest.destinationLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Destination location not found: " + routeRequest.destinationLocationId()));
 
-        if(sourceLocation.getId().equals(destinationLocation.getId())) {
+        if (sourceLocation.getId().equals(destinationLocation.getId())) {
             throw new RouteException("Source and destination cannot be the same");
         }
 
@@ -55,14 +53,15 @@ public class RouteServiceImpl implements RouteServiceInterface {
                 .status(parseRouteStatus(routeRequest.status()))
                 .build();
 
-        return routeMapper.apply(routeRepository.save(route));
+        Route savedRoute = routeRepository.save(route);
+        log.info("Created route {}", savedRoute.getId());
+        return routeMapper.apply(savedRoute);
     }
 
     @Override
     public RouteResponse getRouteById(String id) {
-        return routeMapper.apply(routeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Route not found")
-        ));
+        return routeMapper.apply(routeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Route not found")));
     }
 
     @Override
@@ -99,33 +98,33 @@ public class RouteServiceImpl implements RouteServiceInterface {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found: " + id));
 
-        if(routeRequest.sourceLocationId() != null && 
-           !routeRequest.sourceLocationId().equals(route.getSource().getId())) {
+        if (routeRequest.sourceLocationId() != null &&
+                !routeRequest.sourceLocationId().equals(route.getSource().getId())) {
             Location sourceLocation = locationRepository.findById(routeRequest.sourceLocationId())
                     .orElseThrow(() -> new ResourceNotFoundException("Source location not found: " + routeRequest.sourceLocationId()));
             route.setSource(sourceLocation);
         }
 
-        if(routeRequest.destinationLocationId() != null &&
-           !routeRequest.destinationLocationId().equals(route.getDestination().getId())) {
+        if (routeRequest.destinationLocationId() != null &&
+                !routeRequest.destinationLocationId().equals(route.getDestination().getId())) {
             Location destinationLocation = locationRepository.findById(routeRequest.destinationLocationId())
                     .orElseThrow(() -> new ResourceNotFoundException("Destination location not found: " + routeRequest.destinationLocationId()));
             route.setDestination(destinationLocation);
         }
 
-        if(routeRequest.distanceKm() != null) {
+        if (routeRequest.distanceKm() != null) {
             route.setDistanceKm(routeRequest.distanceKm());
         }
 
-        if(routeRequest.estimatedDurationMinutes() != null) {
+        if (routeRequest.estimatedDurationMinutes() != null) {
             route.setEstimatedDurationMinutes(routeRequest.estimatedDurationMinutes());
         }
 
-        if(routeRequest.description() != null) {
+        if (routeRequest.description() != null) {
             route.setDescription(routeRequest.description());
         }
 
-        if(routeRequest.status() != null) {
+        if (routeRequest.status() != null) {
             route.setStatus(parseRouteStatus(routeRequest.status()));
         }
 
@@ -137,6 +136,7 @@ public class RouteServiceImpl implements RouteServiceInterface {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found: " + id));
         routeRepository.delete(route);
+        log.info("Deleted route {}", id);
     }
 
     @Override

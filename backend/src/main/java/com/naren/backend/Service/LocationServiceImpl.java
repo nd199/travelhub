@@ -8,18 +8,16 @@ import com.naren.backend.exception.ResourceNotFoundException;
 import com.naren.backend.dto.LocationResponse;
 import com.naren.backend.record.LocationRequest;
 import com.naren.backend.repository.LocationRepository;
-import com.naren.backend.service.LocationServiceInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class LocationServiceImpl implements LocationServiceInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocationServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationServiceImpl.class);
 
     private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
@@ -43,14 +41,15 @@ public class LocationServiceImpl implements LocationServiceInterface {
                 .pincode(locationRequest.pincode())
                 .build();
 
-        return locationMapper.apply(locationRepository.save(location));
+        Location savedLocation = locationRepository.save(location);
+        log.info("Created location {}", savedLocation.getId());
+        return locationMapper.apply(savedLocation);
     }
 
     @Override
     public LocationResponse getLocationById(String id) {
-        return locationMapper.apply(locationRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Location not found")
-        ));
+        return locationMapper.apply(locationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found")));
     }
 
     @Override
@@ -94,39 +93,39 @@ public class LocationServiceImpl implements LocationServiceInterface {
         Location location = locationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Location not found: " + id));
 
-        if(locationRequest.name() != null) {
+        if (locationRequest.name() != null) {
             location.setName(locationRequest.name());
         }
 
-        if(locationRequest.city() != null) {
+        if (locationRequest.city() != null) {
             location.setCity(locationRequest.city());
         }
 
-        if(locationRequest.state() != null) {
+        if (locationRequest.state() != null) {
             location.setState(locationRequest.state());
         }
 
-        if(locationRequest.country() != null) {
+        if (locationRequest.country() != null) {
             location.setCountry(locationRequest.country());
         }
 
-        if(locationRequest.latitude() != null) {
+        if (locationRequest.latitude() != null) {
             location.setLatitude(locationRequest.latitude());
         }
 
-        if(locationRequest.longitude() != null) {
+        if (locationRequest.longitude() != null) {
             location.setLongitude(locationRequest.longitude());
         }
 
-        if(locationRequest.type() != null) {
+        if (locationRequest.type() != null) {
             location.setType(parseLocationType(locationRequest.type()));
         }
 
-        if(locationRequest.address() != null) {
+        if (locationRequest.address() != null) {
             location.setAddress(locationRequest.address());
         }
 
-        if(locationRequest.pincode() != null) {
+        if (locationRequest.pincode() != null) {
             location.setPincode(locationRequest.pincode());
         }
 
@@ -138,6 +137,7 @@ public class LocationServiceImpl implements LocationServiceInterface {
         Location location = locationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Location not found: " + id));
         locationRepository.delete(location);
+        log.info("Deleted location {}", id);
     }
 
     @Override

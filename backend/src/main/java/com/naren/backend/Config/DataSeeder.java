@@ -4,18 +4,15 @@ import com.github.javafaker.Faker;
 import com.naren.backend.entity.*;
 import com.naren.backend.repository.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class DataSeeder implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
@@ -34,9 +31,8 @@ public class DataSeeder implements CommandLineRunner {
     private final Faker faker = new Faker();
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String[] args) {
         if (roleRepository.count() == 0) {
-            log.info("Seeding database with fake data...");
             seedRoles();
             seedLocations();
             seedVehicles();
@@ -48,7 +44,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedRoles() {
-        List<Role> roles = Arrays.asList(
+        List<Role> roles = List.of(
                 Role.builder().name("ADMIN").description("System Administrator").build(),
                 Role.builder().name("CUSTOMER").description("Regular Customer").build(),
                 Role.builder().name("OPERATOR").description("Transport Operator").build()
@@ -195,7 +191,6 @@ public class DataSeeder implements CommandLineRunner {
         List<Seat> seats = seatRepository.findAll();
 
         List<Booking> bookings = new ArrayList<>();
-        List<BookingSeat> bookingSeats = new ArrayList<>();
         List<Passenger> passengers = new ArrayList<>();
         List<Payment> payments = new ArrayList<>();
         List<Transaction> transactions = new ArrayList<>();
