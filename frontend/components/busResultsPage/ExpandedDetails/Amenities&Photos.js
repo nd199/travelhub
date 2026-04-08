@@ -1,43 +1,5 @@
 import React from 'react';
-import {
-  Wifi,
-  Snowflake,
-  Power,
-  Zap,
-  BookOpen,
-  Coffee,
-  Video,
-  Timer,
-  Armchair,
-  Droplet,
-} from 'lucide-react';
-
-const busAmenities = [
-  { icon: Wifi, label: 'WiFi', available: true },
-  { icon: Snowflake, label: 'AC', available: true },
-  { icon: Power, label: 'Charging Point', available: true },
-  { icon: Zap, label: 'Water Bottle', available: true },
-  { icon: BookOpen, label: 'Reading Light', available: true },
-  { icon: Coffee, label: 'Snacks', available: true },
-  { icon: Video, label: 'CCTV', available: true },
-  { icon: Timer, label: 'Track ETA', available: true },
-  { icon: Armchair, label: 'Pushback Seats', available: true },
-  { icon: Droplet, label: 'Water Facility', available: true },
-];
-
-const busPhotos = [
-  // Exterior (premium coach)
-  'https://images.unsplash.com/photo-1600959907703-125ba1374a12?w=800',
-
-  // Seater interior
-  'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800',
-
-  // Sleeper bus interior
-  'https://images.unsplash.com/photo-1590650153855-d9e808231d41?w=800',
-
-  // Seat close-up / amenities
-  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800',
-];
+import { busAmenities, busPhotos } from '../../../lib/data/amenities';
 
 export default function AmenitiesAndPhotos() {
   return (
@@ -80,7 +42,7 @@ export default function AmenitiesAndPhotos() {
           >
             <img
               src={photo}
-              alt={`Bus interior ${index + 1}`}
+              alt={`Bus ${photo}`}
               className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
             />
           </div>
