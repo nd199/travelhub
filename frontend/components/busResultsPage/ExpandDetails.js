@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Armchair, Wifi, Star, FileText, MapPin } from 'lucide-react';
 import SelectSeats from './ExpandedDetails/SelectSeats';
+import AmenitiesAndPhotos from './ExpandedDetails/Amenities&Photos';
 
 const ExpandDetails = () => {
   const [activeTab, setActiveTab] = useState('seats');
@@ -35,7 +36,8 @@ const ExpandDetails = () => {
           </button>
         ))}
       </nav>
-      <SelectSeats />
+      {activeTab === 'seats' && <SelectSeats />}
+      {activeTab === 'amenities' && <AmenitiesAndPhotos />}
     </div>
   );
 };
