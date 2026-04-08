@@ -6,10 +6,12 @@ export default function BusCard({ bus }) {
   const [expandDetails, setExpandDetails] = useState(false);
 
   return (
-    <div className="flex flex-col justify-between gap-4 p-4 transition border rounded-xl bg-white border border-gray-200 hover:bg-gray-50">
+    <div className="flex flex-col justify-between gap-4 p-4 transition bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
       <div className="flex justify-between p-2 border border-gray-200 rounded-xl">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{bus.operator}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {bus.operator}
+          </h3>
           <p className="text-sm text-gray-600">{bus.type}</p>
 
           <div className="mt-2 text-sm text-gray-700">

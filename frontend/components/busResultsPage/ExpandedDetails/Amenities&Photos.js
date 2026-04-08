@@ -1,13 +1,22 @@
 import React from 'react';
-import { Wifi, Snowflake, Power, User, USB, Footprints, Clock, Armchair } from 'lucide-react';
+import {
+  Wifi,
+  Snowflake,
+  Power,
+  User,
+  Gauge,
+  Clock,
+  Armchair,
+  Leaf,
+} from 'lucide-react';
 
 const busAmenities = [
   { icon: Wifi, label: 'WiFi', available: true },
   { icon: Snowflake, label: 'AC', available: true },
   { icon: Power, label: 'Charging Point', available: true },
-  { icon: USB, label: 'USB Port', available: true },
+  { icon: Gauge, label: 'USB Port', available: true },
   { icon: Armchair, label: 'Pushback Seats', available: true },
-  { icon: Footprints, label: 'Leg Room', available: true },
+  { icon: Leaf, label: 'Leg Room', available: true },
   { icon: User, label: 'Attendant', available: true },
   { icon: Clock, label: 'Track ETA', available: true },
 ];
@@ -23,7 +32,7 @@ export default function AmenitiesAndPhotos() {
   return (
     <div className="p-4 bg-white rounded-xl">
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Amenities</h2>
-      
+
       <div className="grid grid-cols-2 gap-3 mb-6">
         {busAmenities.map((amenity, index) => (
           <div
@@ -51,7 +60,7 @@ export default function AmenitiesAndPhotos() {
       </div>
 
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Photos</h2>
-      
+
       <div className="grid grid-cols-2 gap-3">
         {busPhotos.map((photo, index) => (
           <div
@@ -61,7 +70,7 @@ export default function AmenitiesAndPhotos() {
             <img
               src={photo}
               alt={`Bus interior ${index + 1}`}
-              className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+              className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
             />
           </div>
         ))}
