@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import FilterSideBar from '../../components/busResults/FilterSideBar';
-import SortBar from '../../components/busResults/SortBar';
-import BusList from '../../components/busResults/BusList';
+import FilterSideBar from '../../components/busResultsPage/FilterSideBar';
+import SortBar from '../../components/busResultsPage/SortBar';
+import BusList from '../../components/busResultsPage/BusList';
 
 const busResults = () => {
   const [buses, setBuses] = useState([

@@ -18,7 +18,7 @@ const SeatSelection = () => {
 
     if (seat.type === 'booked') return;
 
-    if (seat?.reservedFor === 'ladies' && currentUserGender === 'male') {
+    if (seat?.gender === 'ladies' && currentUserGender === 'male') {
       alert('This seat is reserved for female passengers');
       return;
     }
@@ -100,7 +100,7 @@ const Seat = ({ seat, isSelected, onClick, onHover, onLeave }) => {
   const resolveSeatColor = () => {
     if (seat?.type === 'booked') return 'bg-gray-300';
     if (isSelected) return 'bg-green-500';
-    if (seat?.reservedFor === 'ladies') return 'bg-pink-200';
+    if (seat?.gender === 'ladies') return 'bg-pink-200';
     return 'bg-white';
   };
 
@@ -153,7 +153,7 @@ const Tooltip = ({ seat, position }) => {
         <div className="flex justify-between mt-1 text-xs">
           <span className="text-gray-500">Reservation</span>
           <span className="font-medium capitalize">
-            {seat?.reservedFor === 'ladies' ? 'Women Only' : 'Open'}
+            {seat?.gender === 'ladies' ? 'Women Only' : 'Open'}
           </span>
         </div>
       )}
