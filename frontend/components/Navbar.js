@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 export function Navbar({ variant = 'landing' }) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(globalThis.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
+    globalThis.addEventListener('scroll', handleScroll);
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => globalThis.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Landing page variant styles
@@ -54,7 +55,7 @@ export function Navbar({ variant = 'landing' }) {
                 Notifications
               </a>
               <button
-                onClick={() => alert('Logged out')}
+                onClick={() => toast.success('Logged out successfully')}
                 className="px-3 py-1 transition-colors rounded-md bg-white/20 hover:bg-white/30 text-white/90"
               >
                 Logout

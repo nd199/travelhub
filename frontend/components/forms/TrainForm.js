@@ -7,7 +7,7 @@ import {
   cityCodes,
   mockTrainResults,
   mockPnrResult,
-} from '../../data/lib';
+} from '../../lib/data/lib';
 
 const trainValidationSchema = Yup.object({
   fromCity: Yup.string()

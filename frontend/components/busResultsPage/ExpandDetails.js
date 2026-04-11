@@ -1,49 +1,63 @@
 import React, { useState } from 'react';
-import { Armchair, Wifi, Star, FileText, MapPin } from 'lucide-react';
+import {
+  FaChair,
+  FaWifi,
+  FaStar,
+  FaFileAlt,
+  FaMapMarkerAlt,
+  FaTimes,
+} from 'react-icons/fa';
 import SelectSeats from './ExpandedDetails/SelectSeats';
 import AmenitiesAndPhotos from './ExpandedDetails/Amenities&Photos';
 import Reviews from './ExpandedDetails/Reviews';
 import Policies from './ExpandedDetails/Policies';
 import Boarding from './ExpandedDetails/Boarding';
+import { GiCarSeat } from 'react-icons/gi';
+import { MdAirlineSeatReclineExtra } from 'react-icons/md';
 
-const ExpandDetails = () => {
+const ExpandDetails = ({ bus, onClose }) => {
   const [activeTab, setActiveTab] = useState('seats');
 
   const tabs = [
-    { id: 'seats', label: 'Select Seats', icon: Armchair },
-    { id: 'amenities', label: 'Amenities & Photos', icon: Wifi },
-    { id: 'reviews', label: 'Reviews', icon: Star },
-    { id: 'policies', label: 'Policies', icon: FileText },
-    { id: 'boarding', label: 'Boarding & Dropping', icon: MapPin },
+    {
+      id: 'seats',
+      label: 'Seats & Stops',
+      icon: MdAirlineSeatReclineExtra,
+    },
+    { id: 'amenities', label: 'Amenities', icon: FaWifi },
+    { id: 'reviews', label: 'Reviews', icon: FaStar },
+    { id: 'policies', label: 'Policies', icon: FaFileAlt },
+    { id: 'boarding', label: 'Boarding', icon: FaMapMarkerAlt },
   ];
 
   return (
-    <div className="w-full p-4 mt-4 border border-gray-200 rounded-md">
-      <nav className="flex items-center justify-between w-full border rounded-md bg-slate-200">
+    <div className="w-full">
+      <div className="flex items-center gap-1 p-1 mb-4 overflow-x-auto bg-orange-100 rounded-xl">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 cursor-pointer transition-colors px-3 py-2 rounded-xl ${
+            className={`flex items-center gap-2 whitespace-nowrap px-4 py-2 text-sm font-medium rounded-lg transition-all ${
               activeTab === tab.id
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-gray-600 hover:text-blue-600 hover:bg-gray-100'
+                ? 'bg-orange-500 text-white shadow-sm'
+                : 'text-orange-700 hover:text-orange-900'
             }`}
           >
-            <tab.icon
-              size={18}
-              className={activeTab === tab.id ? 'text-white' : 'text-gray-600'}
-            />
-            <span>{tab.label}</span>
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
           </button>
         ))}
-      </nav>
-      {activeTab === 'seats' && <SelectSeats />}
-      {activeTab === 'amenities' && <AmenitiesAndPhotos />}
-      {activeTab === 'reviews' && <Reviews />}
-      {activeTab === 'policies' && <Policies />}
-      {activeTab === 'boarding' && <Boarding />}
+      </div>
+
+      {/* Tab Content */}
+      <div className="p-4 bg-white border border-gray-200 rounded-xl">
+        {activeTab === 'seats' && <SelectSeats bus={bus} />}
+        {activeTab === 'amenities' && <AmenitiesAndPhotos bus={bus} />}
+        {activeTab === 'reviews' && <Reviews bus={bus} />}
+        {activeTab === 'policies' && <Policies bus={bus} />}
+        {activeTab === 'boarding' && <Boarding bus={bus} />}
+      </div>
     </div>
   );
 };

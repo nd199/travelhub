@@ -2,7 +2,7 @@ import { forwardRef, useState, useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { motion } from 'framer-motion';
-import { cities, mockBusResults } from '../../data/lib';
+import { cities, mockBusResults } from '../../lib/data/lib';
 
 const getToday = () => new Date().toISOString().split('T')[0];
 const getTomorrow = () => {

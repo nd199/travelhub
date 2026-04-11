@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { motion } from 'framer-motion'
-import { cities, cityCodes, mockFlightResults } from '../../data/lib'
+import { cities, cityCodes, mockFlightResults } from '../../lib/data/lib'
 
 const flightValidationSchema = Yup.object({
   fromCity: Yup.string()
