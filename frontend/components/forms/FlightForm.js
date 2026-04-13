@@ -50,8 +50,16 @@ export function FlightForm({ onTabChange, activeTab: externalTab }) {
     onSubmit: (values) => {
       setIsSearching(true)
       setTimeout(() => {
-        const mockResults = mockFlightResults
-        setSearchResults(mockResults)
+        const query = new URLSearchParams({
+          from: values.fromCity,
+          to: values.toCity,
+          date: values.date,
+          returnDate: values.returnDate,
+          tripType: values.tripType,
+          passengers: values.passengers,
+          travelClass: values.travelClass,
+        }).toString();
+        router.push(`/flight/flightResults?${query}`);
         setIsSearching(false)
       }, 1500)
     }

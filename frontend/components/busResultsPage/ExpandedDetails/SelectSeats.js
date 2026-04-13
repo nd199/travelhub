@@ -4,6 +4,7 @@ import { GiSteeringWheel } from 'react-icons/gi';
 import { initialSeats } from '../../../lib/data/seats';
 import { boardingPoints, droppingPoints } from '../../../lib/data/boarding';
 import toast from 'react-hot-toast';
+import Bus3D from '../../3dComponents/Bus3D';
 
 const SeatSelection = ({ bus }) => {
   const [seatLayout, setSeatLayout] = useState(initialSeats);
@@ -13,6 +14,7 @@ const SeatSelection = ({ bus }) => {
   const [selectedBoarding, setSelectedBoarding] = useState('');
   const [selectedDropping, setSelectedDropping] = useState('');
   const [error, setError] = useState('');
+  const [view3D, setView3D] = useState(false);
 
   const currentUser = {
     gender: 'male',
@@ -196,9 +198,17 @@ const SeatSelection = ({ bus }) => {
         </div>
       </div>
       <div className="flex-[1]">
-        <h1 className="flex mb-2 text-lg font-semibold text-gray-900">
-          Select Seats
-        </h1>
+        <div className="flex items-center justify-between w-full">
+          <h1 className="flex mb-2 text-lg font-semibold text-gray-900">
+            Select Seats
+          </h1>
+          <button
+            onClick={() => setView3D(!view3D)}
+            className="px-4 py-2 mb-3 text-sm text-white bg-purple-600 rounded-lg"
+          >
+            {view3D ? 'Switch to 2D' : 'Switch to 3D'}
+          </button>
+        </div>
 
         {error && (
           <div className="flex items-center gap-2 px-3 py-2 mb-3 text-sm text-red-700 border border-red-300 rounded-lg shadow-sm bg-red-50">
@@ -249,41 +259,53 @@ const SeatSelection = ({ bus }) => {
         </div>
 
         {/* Bus Layout */}
-        <div className="flex items-center justify-center w-full mt-6">
-          <div className="w-[40px] h-[210px] bg-blue-200 rounded-l-md relative border-2 border-r-0 border-gray-500">
-            <GiSteeringWheel className="absolute w-4 h-4 top-3 left-1" />
+        {view3D ? (
+          <div>
+            <Bus3D
+              seatLayout={seatLayout}
+              activeSelections={activeSelections}
+              handleSeatSelection={handleSeatSelection}
+            />
           </div>
+        ) : (
+          <div className="flex items-center justify-center w-full mt-6">
+            <div className="w-[40px] h-[210px] bg-blue-200 rounded-l-md relative border-2 border-r-0 border-gray-500">
+              <GiSteeringWheel className="absolute w-4 h-4 top-3 left-1" />
+            </div>
 
-          <div className="w-[400px] h-[210px] bg-gray-200 rounded-r-md border-2 border-l-0 border-gray-500 p-4">
-            <div className="flex flex-col items-end gap-5">
-              {seatLayout?.map((row, rowIndex) => (
-                <div key={rowIndex} className="flex gap-5">
-                  {row.map((seat, colIndex) => {
-                    const seatId = `${rowIndex}-${colIndex}`;
-                    const isSelected = activeSelections.includes(seatId);
+            <div className="w-[400px] h-[210px] bg-gray-200 rounded-r-md border-2 border-l-0 border-gray-500 p-4">
+              <div className="flex flex-col items-end gap-5">
+                {seatLayout?.map((row, rowIndex) => (
+                  <div key={rowIndex} className="flex gap-5">
+                    {row.map((seat, colIndex) => {
+                      const seatId = `${rowIndex}-${colIndex}`;
+                      const isSelected = activeSelections.includes(seatId);
 
-                    return (
-                      <Seat
-                        key={seatId}
-                        seat={seat}
-                        isSelected={isSelected}
-                        onClick={() => handleSeatSelection(rowIndex, colIndex)}
-                        onHover={(e) => {
-                          setHoveredSeat(seat);
-                          setCursorPosition({
-                            x: e.clientX,
-                            y: e.clientY,
-                          });
-                        }}
-                        onLeave={() => setHoveredSeat(null)}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
+                      return (
+                        <Seat
+                          key={seatId}
+                          seat={seat}
+                          isSelected={isSelected}
+                          onClick={() =>
+                            handleSeatSelection(rowIndex, colIndex)
+                          }
+                          onHover={(e) => {
+                            setHoveredSeat(seat);
+                            setCursorPosition({
+                              x: e.clientX,
+                              y: e.clientY,
+                            });
+                          }}
+                          onLeave={() => setHoveredSeat(null)}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {hoveredSeat && (
           <Tooltip seat={hoveredSeat} position={cursorPosition} />

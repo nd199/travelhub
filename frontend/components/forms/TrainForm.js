@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { motion } from 'framer-motion';
@@ -20,6 +21,7 @@ const trainValidationSchema = Yup.object({
 });
 
 export function TrainForm({ onTabChange, activeTab: externalTab }) {
+  const router = useRouter();
   const [internalTab, setInternalTab] = useState('train');
   const activeTab = externalTab !== undefined ? externalTab : internalTab;
 
@@ -54,8 +56,13 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
     onSubmit: (values) => {
       setIsSearching(true);
       setTimeout(() => {
-        const mockResults = mockTrainResults;
-        setSearchResults(mockResults);
+        const query = new URLSearchParams({
+          from: values.fromCity,
+          to: values.toCity,
+          date: values.date,
+          travelClass: values.travelClass,
+        }).toString();
+        router.push(`/train/trainResults?${query}`);
         setIsSearching(false);
       }, 1500);
     },

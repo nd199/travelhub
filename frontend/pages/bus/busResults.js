@@ -12,7 +12,11 @@ const busResults = () => {
   const router = useRouter();
   const { query } = router;
   const [buses] = useState(busesData);
-  const [searchParams, setSearchParams] = useState({ from: '', to: '', date: '' });
+  const [searchParams, setSearchParams] = useState({
+    from: '',
+    to: '',
+    date: '',
+  });
 
   useEffect(() => {
     if (query.from && query.to && query.date) {
@@ -45,7 +49,7 @@ const busResults = () => {
   return (
     <div className="min-h-screen bg-orange-50">
       <Navbar />
-      <div className="sticky top-0 z-50 bg-blue-600 border-b border-blue-700 shadow-md mt-16">
+      <div className="sticky top-0 z-50 mt-16 bg-blue-600 border-b border-blue-700 shadow-md">
         <div className="px-6 py-4">
           <BusSearchHeader
             initialData={{
@@ -53,7 +57,9 @@ const busResults = () => {
               to: searchParams.to || 'Bangalore',
               departure: searchParams.date || '2026-04-10',
             }}
-            onSearch={(data) => toast.success(`Searching: ${data.from} to ${data.to}`)}
+            onSearch={(data) =>
+              toast.success(`Searching: ${data.from} to ${data.to}`)
+            }
           />
         </div>
       </div>

@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fa';
 import { IoWater, IoFlash } from 'react-icons/io5';
 import { GiWaterDrop } from 'react-icons/gi';
+import { Canvas } from "@react-three/fiber";
 
 export default function BusCard({ bus, onSelectBus }) {
   const [expandDetails, setExpandDetails] = useState(false);
@@ -81,7 +82,7 @@ export default function BusCard({ bus, onSelectBus }) {
               >
                 {bus.seats} window seats
               </span>
-              <span className="text-xs text-gray-600 font-medium">
+              <span className="text-xs font-medium text-gray-600">
                 Total {bus.totalSeatsLeft} seats left
               </span>
             </div>
@@ -101,7 +102,7 @@ export default function BusCard({ bus, onSelectBus }) {
                 <div className="absolute -top-1.5 left-0 w-2 h-2 rounded-full bg-gray-400"></div>
                 <div className="absolute -top-1.5 right-0 w-2 h-2 rounded-full bg-gray-400"></div>
               </div>
-              <div className="text-xs text-gray-600 font-medium">{bus.date}</div>
+              <div className="text-xs font-medium text-gray-600">{bus.date}</div>
             </div>
             <div>
               <div className="text-lg font-bold text-gray-900">
@@ -117,16 +118,26 @@ export default function BusCard({ bus, onSelectBus }) {
               <p className="text-2xl font-bold text-gray-900">₹{bus.price}</p>
               <p className="text-xs text-gray-500">per person</p>
             </div>
-            <button
-              onClick={() => onSelectBus(bus)}
-              className={`px-6 py-2 text-sm font-medium rounded-lg transition-colors ${
-                isExpanded
-                  ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {isExpanded ? 'Hide Details' : 'Select Seats'}
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className={`px-6 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isExpanded
+                    ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {isExpanded ? 'Hide Details' : 'Select Seats'}
+              </button>
+              {isExpanded && (
+                <button
+                  onClick={() => onSelectBus(bus)}
+                  className="px-6 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+                >
+                  Continue to Booking
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
