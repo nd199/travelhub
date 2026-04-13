@@ -1,96 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import { Navbar } from '../../components/Navbar';
 import FilterSideBar from '../../components/busResultsPage/FilterSideBar';
 import SortBar from '../../components/busResultsPage/SortBar';
 import BusList from '../../components/busResultsPage/BusList';
 import BusSearchHeader from '../../components/forms/BusSearchHeader';
+import { busesData } from '../../lib/data/buses';
 
 const busResults = () => {
   const router = useRouter();
-  const [buses] = useState([
-    {
-      id: 1,
-      operator: 'KSRTC',
-      departure: '08:00',
-      arrival: '14:00',
-      duration: '6h',
-      price: 850,
-      seats: 12,
-      type: 'AC Sleeper',
-      boardingPoint: 'City Center Bus Stand',
-      droppingPoint: 'MGM Bus Stand',
-      rating: 4.2,
-      reviews: 128,
-      amenities: { AC: true, WiFi: true, 'Charging Point': true },
-    },
-    {
-      id: 2,
-      operator: 'SRS Travels',
-      departure: '10:30',
-      arrival: '16:30',
-      duration: '6h',
-      price: 750,
-      seats: 8,
-      type: 'Non-AC Seater',
-      boardingPoint: 'South Junction',
-      droppingPoint: 'Airport Junction',
-      rating: 4.5,
-      reviews: 89,
-      amenities: { 'Charging Point': true, 'Water Bottle': true },
-    },
-    {
-      id: 3,
-      operator: 'Orange Tours',
-      departure: '14:00',
-      arrival: '20:00',
-      duration: '6h',
-      price: 920,
-      seats: 15,
-      type: 'AC Seater',
-      boardingPoint: 'Central Station',
-      droppingPoint: 'MGM Bus Stand',
-      rating: 4.0,
-      reviews: 64,
-      amenities: { AC: true, WiFi: true, 'Charging Point': true, Snacks: true },
-    },
-    {
-      id: 4,
-      operator: 'APSRTC',
-      departure: '18:00',
-      arrival: '23:30',
-      duration: '5h 30m',
-      price: 680,
-      seats: 20,
-      type: 'Non-AC Sleeper',
-      boardingPoint: 'City Center Bus Stand',
-      droppingPoint: 'Railway Station',
-      rating: 3.8,
-      reviews: 156,
-      amenities: { 'Water Bottle': true, 'Reading Light': true },
-    },
-    {
-      id: 5,
-      operator: 'VRL Travels',
-      departure: '21:00',
-      arrival: '05:00',
-      duration: '8h',
-      price: 1100,
-      seats: 6,
-      type: 'AC Sleeper',
-      boardingPoint: 'South Junction',
-      droppingPoint: 'Airport Junction',
-      rating: 4.7,
-      reviews: 203,
-      amenities: {
-        AC: true,
-        WiFi: true,
-        'Charging Point': true,
-        CCTV: true,
-        'Water Facility': true,
-      },
-    },
-  ]);
+  const { query } = router;
+  const [buses] = useState(busesData);
+  const [searchParams, setSearchParams] = useState({ from: '', to: '', date: '' });
+
+  useEffect(() => {
+    if (query.from && query.to && query.date) {
+      setSearchParams({
+        from: query.from,
+        to: query.to,
+        date: query.date,
+      });
+    }
+  }, [query]);
 
   const [filtered, setFiltered] = useState(buses);
 
@@ -112,13 +44,14 @@ const busResults = () => {
 
   return (
     <div className="min-h-screen bg-orange-50">
-      <div className="sticky top-0 z-50 bg-blue-600 border-b border-blue-700 shadow-md">
+      <Navbar />
+      <div className="sticky top-0 z-50 bg-blue-600 border-b border-blue-700 shadow-md mt-16">
         <div className="px-6 py-4">
           <BusSearchHeader
             initialData={{
-              from: 'Chennai',
-              to: 'Bangalore',
-              departure: '2026-04-10',
+              from: searchParams.from || 'Chennai',
+              to: searchParams.to || 'Bangalore',
+              departure: searchParams.date || '2026-04-10',
             }}
             onSearch={(data) => toast.success(`Searching: ${data.from} to ${data.to}`)}
           />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 import toast from 'react-hot-toast';
+import { Navbar } from '../../components/Navbar';
 import {
   FaBus,
   FaMapMarkerAlt,
@@ -9,7 +9,7 @@ import {
   FaUser,
   FaPhone,
   FaEnvelope,
-  FaSeat,
+  FaChair,
 } from 'react-icons/fa';
 
 export default function ReviewBooking() {
@@ -17,7 +17,7 @@ export default function ReviewBooking() {
   const [isClient, setIsClient] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [passengers, setPassengers] = useState([
-    { name: '', email: '', phone: '', age: '', gender: 'Male' },
+    { id: 1, name: '', email: '', phone: '', age: '', gender: 'Male' },
   ]);
 
   useEffect(() => {
@@ -38,7 +38,13 @@ export default function ReviewBooking() {
     busType: query.type || 'AC Sleeper (2+1)',
     from: query.from || 'Chennai',
     to: query.to || 'Bangalore',
-    date: query.date ? new Date(query.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '11th April 2026',
+    date: query.date
+      ? new Date(query.date).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      : '11th April 2026',
     departure: query.departure || '22:30',
     arrival: query.arrival || '05:30',
     duration: query.duration || '7h',
@@ -51,15 +57,26 @@ export default function ReviewBooking() {
   };
 
   const addPassenger = () => {
+    const newId = Math.max(...passengers.map(p => p.id), 0) + 1;
     setPassengers([
       ...passengers,
-      { name: '', email: '', phone: '', age: '', gender: 'Male' },
+      { id: newId, name: '', email: '', phone: '', age: '', gender: 'Male' },
     ]);
   };
 
-  const updatePassenger = (index, field, value) => {
-    const updated = [...passengers];
-    updated[index][field] = value;
+  const removePassenger = (id) => {
+    if (passengers.length > 1) {
+      const updated = passengers.filter((passenger) => passenger.id !== id);
+      setPassengers(updated);
+    } else {
+      toast.error('At least one passenger is required');
+    }
+  };
+
+  const updatePassenger = (id, field, value) => {
+    const updated = passengers.map((passenger) =>
+      passenger.id === id ? { ...passenger, [field]: value } : passenger
+    );
     setPassengers(updated);
   };
 
@@ -79,74 +96,102 @@ export default function ReviewBooking() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">
-          Review Your Booking
-        </h1>
+    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-gray-300 to-gray-400">
+      <Navbar variant="landing" />
+      <div className="max-w-7xl mx-auto pt-20">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Review Your Booking
+          </h1>
+          <p className="text-gray-600">Please review your journey details and passenger information before proceeding</p>
+        </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
-            <div className="p-6 bg-white border shadow-sm rounded-xl">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Journey Details
-              </h2>
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-6">
+          <div className="space-y-6 xl:col-span-4">
+            <div className="p-6 bg-white border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow duration-300">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-6 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full"></div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Journey Details
+                </h2>
+              </div>
               <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full">
-                  <FaBus className="text-xl text-orange-600" />
+                <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl shadow-lg">
+                  <FaBus className="text-2xl text-orange-600" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">
+                  <p className="text-xl font-bold text-gray-900">
                     {bookingDetails.operator}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-base text-gray-600 font-medium">
                     {bookingDetails.busType}
                   </p>
-                  <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                    <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded">
-                      On Time
+                  <div className="flex items-center gap-3 mt-3">
+                    <span className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200">
+                      ✓ On Time
                     </span>
-                    <span>4.2 ★</span>
+                    <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
+                      <span className="text-yellow-500">★</span> 4.2
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-6">
-                <div className="text-center">
-                  <p className="text-xl font-bold text-gray-900">
+              <div className="flex items-center justify-between mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl">
+                <div className="text-center flex-1">
+                  <p className="text-2xl font-bold text-gray-900">
                     {bookingDetails.departure}
                   </p>
-                  <p className="text-sm text-gray-500">{bookingDetails.from}</p>
+                  <p className="text-base font-semibold text-gray-600 mt-1">{bookingDetails.from}</p>
                 </div>
-                <div className="flex-1 px-4">
+                <div className="flex-1 px-6">
                   <div className="relative flex items-center justify-center">
-                    <div className="absolute left-0 right-0 h-0.5 bg-gray-300 top-1/2"></div>
-                    <div className="relative z-10 px-4 text-xs text-gray-500 bg-white">
+                    <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-orange-300 to-orange-400 top-1/2 rounded-full"></div>
+                    <div className="relative z-10 px-4 py-2 text-sm font-semibold text-orange-700 bg-white rounded-full shadow-md border border-orange-200">
                       {bookingDetails.duration}
                     </div>
                   </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-xl font-bold text-gray-900">
+                <div className="text-center flex-1">
+                  <p className="text-2xl font-bold text-gray-900">
                     {bookingDetails.arrival}
                   </p>
-                  <p className="text-sm text-gray-500">{bookingDetails.to}</p>
+                  <p className="text-base font-semibold text-gray-600 mt-1">{bookingDetails.to}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 bg-white border shadow-sm rounded-xl">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Passenger Details
-              </h2>
+            <div className="p-8 bg-white border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow duration-300">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Passenger Details
+                </h2>
+              </div>
               {passengers.map((passenger, index) => (
                 <div
-                  key={index}
+                  key={passenger.id}
                   className="pb-6 mb-6 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0"
                 >
-                  <p className="mb-3 text-sm font-medium text-gray-700">
-                    Passenger {index + 1}
-                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                        {index + 1}
+                      </div>
+                      <p className="text-base font-semibold text-gray-800">
+                        Passenger {index + 1}
+                      </p>
+                    </div>
+                    {passengers.length > 1 && (
+                      <button
+                        onClick={() => removePassenger(passenger.id)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200"
+                      >
+                        <span className="text-lg">−</span>
+                        Remove
+                      </button>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                     <div>
                       <label className="block mb-1 text-xs text-gray-500">
@@ -158,7 +203,7 @@ export default function ReviewBooking() {
                           type="text"
                           value={passenger.name}
                           onChange={(e) =>
-                            updatePassenger(index, 'name', e.target.value)
+                            updatePassenger(passenger.id, 'name', e.target.value)
                           }
                           placeholder="As per ID"
                           className="w-full py-2 pr-3 text-sm border rounded-lg pl-9 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -175,7 +220,7 @@ export default function ReviewBooking() {
                           type="email"
                           value={passenger.email}
                           onChange={(e) =>
-                            updatePassenger(index, 'email', e.target.value)
+                            updatePassenger(passenger.id, 'email', e.target.value)
                           }
                           placeholder="For ticket confirmation"
                           className="w-full py-2 pr-3 text-sm border rounded-lg pl-9 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -192,7 +237,7 @@ export default function ReviewBooking() {
                           type="tel"
                           value={passenger.phone}
                           onChange={(e) =>
-                            updatePassenger(index, 'phone', e.target.value)
+                            updatePassenger(passenger.id, 'phone', e.target.value)
                           }
                           placeholder="10-digit mobile"
                           className="w-full py-2 pr-3 text-sm border rounded-lg pl-9 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -207,7 +252,7 @@ export default function ReviewBooking() {
                         type="number"
                         value={passenger.age}
                         onChange={(e) =>
-                          updatePassenger(index, 'age', e.target.value)
+                          updatePassenger(passenger.id, 'age', e.target.value)
                         }
                         placeholder="Years"
                         className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -220,7 +265,7 @@ export default function ReviewBooking() {
                       <select
                         value={passenger.gender}
                         onChange={(e) =>
-                          updatePassenger(index, 'gender', e.target.value)
+                          updatePassenger(passenger.id, 'gender', e.target.value)
                         }
                         className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                       >
@@ -234,53 +279,66 @@ export default function ReviewBooking() {
               {passengers.length < 6 && (
                 <button
                   onClick={addPassenger}
-                  className="text-sm font-medium text-orange-600 hover:text-orange-700"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200 border border-orange-200"
                 >
-                  + Add more passengers
+                  <span className="text-lg">+</span>
+                  Add more passengers
                 </button>
               )}
             </div>
 
-            <div className="p-6 bg-white border shadow-sm rounded-xl">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Pickup & Drop Points
-              </h2>
+            <div className="p-8 bg-white border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow duration-300">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-6 bg-gradient-to-b from-green-400 to-green-600 rounded-full"></div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Pickup & Drop Points
+                </h2>
+              </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="p-4 border border-green-100 rounded-lg bg-green-50">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FaMapMarkerAlt className="text-green-600" />
-                    <span className="font-medium text-gray-900">
+                <div className="p-6 border-2 border-green-200 rounded-xl bg-gradient-to-br from-green-50 to-green-100 shadow-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                      <FaMapMarkerAlt className="text-white text-lg" />
+                    </div>
+                    <span className="font-bold text-gray-900 text-lg">
                       Boarding Point
                     </span>
                   </div>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-base font-semibold text-gray-800">
                     {bookingDetails.boardingPoint}
                   </p>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-2 text-sm text-gray-600 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                     Report 30 mins before departure
                   </p>
                 </div>
-                <div className="p-4 border border-red-100 rounded-lg bg-red-50">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FaMapMarkerAlt className="text-red-600" />
-                    <span className="font-medium text-gray-900">
+                <div className="p-6 border-2 border-red-200 rounded-xl bg-gradient-to-br from-red-50 to-red-100 shadow-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                      <FaMapMarkerAlt className="text-white text-lg" />
+                    </div>
+                    <span className="font-bold text-gray-900 text-lg">
                       Dropping Point
                     </span>
                   </div>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-base font-semibold text-gray-800">
                     {bookingDetails.droppingPoint}
                   </p>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-2 text-sm text-gray-600 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                     Final stop on the route
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 bg-white border shadow-sm rounded-xl">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                GST Details (Optional)
-              </h2>
+            <div className="p-8 bg-white border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow duration-300">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-6 bg-gradient-to-b from-purple-400 to-purple-600 rounded-full"></div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  GST Details (Optional)
+                </h2>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1 text-xs text-gray-500">
@@ -306,53 +364,60 @@ export default function ReviewBooking() {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="sticky p-6 bg-white border shadow-sm rounded-xl top-6">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Fare Summary
-              </h2>
-
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <span className="text-gray-600">
-                  Base Fare ({bookingDetails.seats.length} seats)
-                </span>
-                <span className="font-medium text-gray-900">
-                  ₹{bookingDetails.fare}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <span className="text-gray-600">GST (9%)</span>
-                <span className="font-medium text-gray-900">
-                  ₹{bookingDetails.GST}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <span className="text-gray-600">CGST (9%)</span>
-                <span className="font-medium text-gray-900">
-                  ₹{bookingDetails.GST}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-3">
-                <span className="font-semibold text-gray-900">
-                  Total Amount
-                </span>
-                <span className="text-xl font-bold text-orange-600">
-                  ₹{bookingDetails.total}
-                </span>
+          <div className="space-y-8 xl:col-span-2">
+            <div className="sticky p-8 bg-gradient-to-br from-white to-gray-50 border-0 shadow-2xl rounded-2xl top-6 hover:shadow-3xl transition-shadow duration-300">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-6 bg-gradient-to-b from-orange-400 to-orange-600 rounded-full"></div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Fare Summary
+                </h2>
               </div>
 
-              <div className="p-3 mt-4 border border-blue-100 rounded-lg bg-blue-50">
-                <div className="flex items-center gap-2">
-                  <FaSeat className="text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">
+              <div className="space-y-1">
+                <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
+                  <span className="text-gray-700 font-medium">
+                    Base Fare ({bookingDetails.seats.length} seats)
+                  </span>
+                  <span className="font-semibold text-gray-900 text-lg">
+                    ₹{bookingDetails.fare}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
+                  <span className="text-gray-700 font-medium">GST (9%)</span>
+                  <span className="font-semibold text-gray-900 text-lg">
+                    ₹{bookingDetails.GST}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
+                  <span className="text-gray-700 font-medium">CGST (9%)</span>
+                  <span className="font-semibold text-gray-900 text-lg">
+                    ₹{bookingDetails.GST}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-5 px-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl mt-4">
+                  <span className="font-bold text-white text-lg">
+                    Total Amount
+                  </span>
+                  <span className="text-2xl font-bold text-white">
+                    ₹{bookingDetails.total}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-5 mt-6 border-2 border-blue-200 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <FaChair className="text-white text-lg" />
+                  </div>
+                  <span className="text-base font-bold text-blue-800">
                     Selected Seats
                   </span>
                 </div>
-                <div className="flex gap-2 mt-2">
+                <div className="flex flex-wrap gap-2">
                   {bookingDetails.seats.map((seat) => (
                     <span
                       key={seat}
-                      className="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 rounded"
+                      className="px-4 py-2 text-sm font-bold text-blue-800 bg-blue-200 rounded-lg border-2 border-blue-300"
                     >
                       {seat}
                     </span>
@@ -360,20 +425,25 @@ export default function ReviewBooking() {
                 </div>
               </div>
 
-              <div className="p-3 mt-4 rounded-lg bg-gray-50">
-                <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
-                  <FaClock className="text-gray-400" />
-                  <span>Journey Duration: {bookingDetails.duration}</span>
+              <div className="p-5 mt-6 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
+                <div className="flex items-center gap-3 mb-3 text-gray-700">
+                  <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                    <FaClock className="text-white text-sm" />
+                  </div>
+                  <span className="font-semibold">Journey Duration: {bookingDetails.duration}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <span>Travel Date: {bookingDetails.date}</span>
+                <div className="flex items-center gap-3 text-gray-700">
+                  <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">📅</span>
+                  </div>
+                  <span className="font-semibold">Travel Date: {bookingDetails.date}</span>
                 </div>
               </div>
 
               <button
                 onClick={handleBooking}
                 disabled={isProcessing}
-                className="w-full py-3 mt-6 font-semibold text-white transition-colors bg-orange-600 rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-4 mt-8 text-lg font-bold text-white transition-all duration-300 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {isProcessing ? 'Processing...' : 'Proceed to Payment'}
               </button>

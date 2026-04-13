@@ -1,10 +1,15 @@
 import { forwardRef, useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { motion } from 'framer-motion';
 import { cities, mockBusResults } from '../../lib/data/lib';
 
-const getToday = () => new Date().toISOString().split('T')[0];
+const getToday = () => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
+
 const getTomorrow = () => {
   const t = new Date();
   t.setDate(t.getDate() + 1);
@@ -32,10 +37,18 @@ const busValidationSchema = Yup.object({
     ),
   date: Yup.string()
     .required('Date is required')
-    .min(getToday(), 'Date cannot be in the past'),
+    .test(
+      'not-past',
+      'Date cannot be in the past',
+      function (value) {
+        const today = new Date().toISOString().split('T')[0];
+        return value >= today;
+      }
+    ),
 });
 
 export function BusForm({ onTabChange, activeTab: externalTab }) {
+  const router = useRouter();
   const [internalTab, setInternalTab] = useState('bus');
   const activeTab = externalTab !== undefined ? externalTab : internalTab;
 
@@ -61,11 +74,13 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
     validationSchema: busValidationSchema,
     onSubmit: (values) => {
       setIsSearching(true);
-      searchTimeoutRef.current = setTimeout(() => {
-        const mockResults = mockBusResults;
-        setSearchResults(mockResults);
-        setIsSearching(false);
-      }, 1500);
+      // Navigate to bus results page with search params
+      const query = new URLSearchParams({
+        from: values.fromCity,
+        to: values.toCity,
+        date: values.date,
+      }).toString();
+      router.push(`/bus/busResults?${query}`);
     },
   });
 

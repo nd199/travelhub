@@ -63,7 +63,7 @@ export default function BusCard({ bus, onSelectBus }) {
                   </span>
                 </div>
                 <span className="text-xs text-gray-500">
-                  ({bus.reviews} reviews)
+                  /{bus.reviews} Ratings
                 </span>
               </div>
             )}
@@ -79,7 +79,10 @@ export default function BusCard({ bus, onSelectBus }) {
                       : 'bg-red-100 text-red-700'
                 }`}
               >
-                {bus.seats} Seats Available
+                {bus.seats} window seats
+              </span>
+              <span className="text-xs text-gray-600 font-medium">
+                Total {bus.totalSeatsLeft} seats left
               </span>
             </div>
           </div>
@@ -90,7 +93,7 @@ export default function BusCard({ bus, onSelectBus }) {
               <div className="text-lg font-bold text-gray-900">
                 {bus.departure}
               </div>
-              <div className="text-xs text-gray-500">Depart</div>
+              <div className="text-xs text-gray-500">{bus.boardingPoint}</div>
             </div>
             <div className="flex flex-col items-center">
               <div className="text-xs text-gray-500">{bus.duration}</div>
@@ -98,13 +101,13 @@ export default function BusCard({ bus, onSelectBus }) {
                 <div className="absolute -top-1.5 left-0 w-2 h-2 rounded-full bg-gray-400"></div>
                 <div className="absolute -top-1.5 right-0 w-2 h-2 rounded-full bg-gray-400"></div>
               </div>
-              <FaClock className="w-3 h-3 text-gray-400" />
+              <div className="text-xs text-gray-600 font-medium">{bus.date}</div>
             </div>
             <div>
               <div className="text-lg font-bold text-gray-900">
                 {bus.arrival}
               </div>
-              <div className="text-xs text-gray-500">Arrive</div>
+              <div className="text-xs text-gray-500">{bus.droppingPoint}</div>
             </div>
           </div>
 
@@ -200,6 +203,26 @@ export default function BusCard({ bus, onSelectBus }) {
             </div>
           </div>
         </div>
+
+        {/* People's Choice Section */}
+        {bus.peoplesChoice && bus.peoplesChoice.length > 0 && (
+          <div className="pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-xs font-semibold text-gray-600 uppercase">People choice for</span>
+              <div className="flex items-center gap-2">
+                {bus.peoplesChoice.map((choice, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full"
+                  >
+                    <span>•</span>
+                    {choice}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Expandable Details */}
