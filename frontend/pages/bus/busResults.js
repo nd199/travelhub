@@ -50,7 +50,7 @@ const busResults = () => {
     <div className="min-h-screen bg-orange-50">
       <Navbar />
       <div className="sticky top-0 z-50 mt-16 bg-blue-600 border-b border-blue-700 shadow-md">
-        <div className="px-6 py-4">
+        <div className="px-4 py-2">
           <BusSearchHeader
             initialData={{
               from: searchParams.from || 'Chennai',

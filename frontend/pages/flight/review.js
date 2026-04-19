@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { Navbar } from '../../components/Navbar';
 import SeatSelection from '../../components/flightResultsPage/SeatSelection';
+import BookingProgress from '../../components/BookingProgress';
+import BreadcrumbNavigation from '../../components/BreadcrumbNavigation';
 import {
   FaPlane,
   FaMapMarkerAlt,
@@ -128,6 +130,9 @@ export default function ReviewBooking() {
     <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-purple-50 to-pink-100">
       <Navbar variant="landing" />
       <div className="max-w-7xl mx-auto pt-20">
+        <BreadcrumbNavigation transportType="flight" />
+        <BookingProgress currentStep={4} transportType="flight" />
+        
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Review Your Flight Booking
@@ -153,14 +158,14 @@ export default function ReviewBooking() {
                     {bookingDetails.airline}
                   </p>
                   <p className="text-base text-gray-600 font-medium">
-                    {bookingDetails.flightNumber} â¢ {bookingDetails.type} â¢ {bookingDetails.aircraft}
+                    {bookingDetails.flightNumber} - {bookingDetails.type} - {bookingDetails.aircraft}
                   </p>
                   <div className="flex items-center gap-3 mt-3">
                     <span className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200">
-                      â On Time
+                      ✓ On Time
                     </span>
                     <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
-                      <span className="text-yellow-500">â</span> 4.3
+                      <span className="text-yellow-500">★</span> 4.3
                     </span>
                     <span className="bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-blue-200">
                       {bookingDetails.stops}
@@ -220,7 +225,7 @@ export default function ReviewBooking() {
                         onClick={() => removePassenger(passenger.id)}
                         className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200"
                       >
-                        <span className="text-lg">â</span>
+                        <span className="text-lg">×</span>
                         Remove
                       </button>
                     )}
@@ -336,10 +341,10 @@ export default function ReviewBooking() {
                   onChange={(e) => setSelectedClass(e.target.value)}
                   className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 >
-                  <option value="Economy">Economy (â¹{flightData.price.Economy})</option>
-                  <option value="Premium Economy">Premium Economy (â¹{flightData.price['Premium Economy']})</option>
-                  <option value="Business">Business (â¹{flightData.price.Business})</option>
-                  <option value="First Class">First Class (â¹{flightData.price['First Class']})</option>
+                  <option value="Economy">Economy (₹{flightData.price.Economy})</option>
+                  <option value="Premium Economy">Premium Economy (₹{flightData.price['Premium Economy']})</option>
+                  <option value="Business">Business (₹{flightData.price.Business})</option>
+                  <option value="First Class">First Class (₹{flightData.price['First Class']})</option>
                 </select>
               </div>
               
@@ -412,19 +417,19 @@ export default function ReviewBooking() {
                     Base Fare ({selectedSeats.length} seats × {selectedClass})
                   </span>
                   <span className="font-semibold text-gray-900 text-lg">
-                    â¹{bookingDetails.fare}
+                    ₹{bookingDetails.fare}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
                   <span className="text-gray-700 font-medium">GST (9%)</span>
                   <span className="font-semibold text-gray-900 text-lg">
-                    â¹{bookingDetails.GST}
+                    ₹{bookingDetails.GST}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
                   <span className="text-gray-700 font-medium">CGST (9%)</span>
                   <span className="font-semibold text-gray-900 text-lg">
-                    â¹{bookingDetails.GST}
+                    ₹{bookingDetails.GST}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-5 px-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl mt-4">
@@ -432,7 +437,7 @@ export default function ReviewBooking() {
                     Total Amount
                   </span>
                   <span className="text-2xl font-bold text-white">
-                    â¹{bookingDetails.total}
+                    ₹{bookingDetails.total}
                   </span>
                 </div>
               </div>

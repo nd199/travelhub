@@ -76,7 +76,7 @@ const Bus3D = ({
         >
           <planeGeometry args={[20, 8]} />
           <meshStandardMaterial
-            color="#e5e7eb"
+            color="#d1d5db"
             roughness={0.9}
             metalness={0.1}
           />
@@ -92,9 +92,29 @@ const Bus3D = ({
           />
         </mesh>
 
+        {/* Bus Front Face */}
+        <mesh position={[14, 1.2, -1]}>
+          <boxGeometry args={[0.3, 2.5, 6]} />
+          <meshStandardMaterial
+            color="#6b7280"
+            roughness={0.6}
+            metalness={0.4}
+          />
+        </mesh>
+
+        {/* Bus Back Face */}
+        <mesh position={[-6, 1.2, -1]}>
+          <boxGeometry args={[0.3, 2.5, 6]} />
+          <meshStandardMaterial
+            color="#6b7280"
+            roughness={0.6}
+            metalness={0.4}
+          />
+        </mesh>
+
         {/* Wheels */}
         {/* Front Left */}
-        <mesh position={[-4, -0.2, -5]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh position={[-2, -0.2, -5]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.8, 0.8, 0.8, 30]} />
           <meshStandardMaterial
             color="#0f172a"
@@ -104,7 +124,7 @@ const Bus3D = ({
         </mesh>
 
         {/* Front Right */}
-        <mesh position={[10, -0.2, 3]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh position={[9, -0.2, 3]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.8, 0.8, 0.8, 30]} />
           <meshStandardMaterial
             color="#0f172a"
@@ -114,7 +134,7 @@ const Bus3D = ({
         </mesh>
 
         {/* Back Left */}
-        <mesh position={[-4, -0.2, 3]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh position={[-2, -0.2, 3]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.8, 0.8, 0.8, 30]} />
           <meshStandardMaterial
             color="#0f172a"
@@ -124,7 +144,7 @@ const Bus3D = ({
         </mesh>
 
         {/* Back Right */}
-        <mesh position={[10, -0.2, -5]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh position={[9, -0.2, -5]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.8, 0.8, 0.8, 30]} />
           <meshStandardMaterial
             color="#0f172a"
@@ -137,9 +157,23 @@ const Bus3D = ({
         <mesh position={[-6.0, 1, -1]}>
           <boxGeometry args={[0.2, 2, 8]} />
           <meshStandardMaterial
-            color="#c7d2fe"
-            roughness={0.7}
-            metalness={0.2}
+            color="#93c5fd"
+            roughness={0.3}
+            metalness={0.1}
+            transparent
+            opacity={0.4}
+          />
+        </mesh>
+
+        {/* Left Windows (Glass Panels) */}
+        <mesh position={[-5.85, 1, -1]}>
+          <boxGeometry args={[0.05, 1.6, 7]} />
+          <meshStandardMaterial
+            color="#bfdbfe"
+            roughness={0.1}
+            metalness={0.1}
+            transparent
+            opacity={0.25}
           />
         </mesh>
 
@@ -147,9 +181,23 @@ const Bus3D = ({
         <mesh position={[11.5, 1, -1]}>
           <boxGeometry args={[0.2, 2, 8]} />
           <meshStandardMaterial
-            color="#c7d2fe"
-            roughness={0.7}
-            metalness={0.2}
+            color="#93c5fd"
+            roughness={0.3}
+            metalness={0.1}
+            transparent
+            opacity={0.4}
+          />
+        </mesh>
+
+        {/* Right Windows (Glass Panels) */}
+        <mesh position={[11.35, 1, -1]}>
+          <boxGeometry args={[0.05, 1.6, 7]} />
+          <meshStandardMaterial
+            color="#bfdbfe"
+            roughness={0.1}
+            metalness={0.1}
+            transparent
+            opacity={0.25}
           />
         </mesh>
 

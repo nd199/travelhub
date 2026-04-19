@@ -5,14 +5,18 @@ import { Navbar } from '../../components/Navbar';
 import FilterSideBar from '../../components/busResultsPage/FilterSideBar';
 import SortBar from '../../components/busResultsPage/SortBar';
 import TrainList from '../../components/trainResultsPage/TrainList';
-import BusSearchHeader from '../../components/forms/BusSearchHeader';
+import TrainSearchHeader from '../../components/forms/TrainSearchHeader';
 import { trainsData } from '../../lib/data/trains';
 
-const trainResults = () => {
+const TrainResults = () => {
   const router = useRouter();
   const { query } = router;
   const [trains] = useState(trainsData);
-  const [searchParams, setSearchParams] = useState({ from: '', to: '', date: '' });
+  const [searchParams, setSearchParams] = useState({
+    from: '',
+    to: '',
+    date: '',
+  });
 
   useEffect(() => {
     if (query.from && query.to && query.date) {
@@ -45,30 +49,41 @@ const trainResults = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
       <Navbar />
-      <div className="sticky top-0 z-50 bg-blue-600 border-b border-blue-700 shadow-md mt-16">
+      <div className="sticky top-0 z-50 mt-16 bg-blue-600 border-b border-blue-700 shadow-md">
         <div className="px-6 py-4">
-          <BusSearchHeader
+          <TrainSearchHeader
             initialData={{
               from: searchParams.from || 'Bangalore',
               to: searchParams.to || 'Chennai',
               departure: searchParams.date || '2026-04-14',
             }}
-            onSearch={(data) => toast.success(`Searching: ${data.from} to ${data.to}`)}
+            onSearch={(data) =>
+              toast.success(`Searching: ${data.from} to ${data.to}`)
+            }
           />
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex gap-4">
         {/* Filter Sidebar - Sticky */}
         <div className="sticky top-0 left-0 h-screen p-6 overflow-hidden w-68">
           <FilterSideBar buses={trains} setFiltered={setFiltered} />
         </div>
 
         {/* Results Area - Scrollable */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 space-y-4">
           <SortBar buses={filtered} setFiltered={setFiltered} />
+          <div className="flex items-center justify-between p-4 bg-white shadow-md rounded-xl">
+            <h2 className="text-lg font-semibold text-gray-700">
+              {filtered.length} Trains Found
+            </h2>
+            <p className="text-sm text-gray-500">
+              {searchParams.from} → {searchParams.to} • {searchParams.date}
+            </p>
+          </div>
+
           <TrainList trains={filtered} onSelectTrain={handleSelectTrain} />
         </div>
       </div>
@@ -76,4 +91,4 @@ const trainResults = () => {
   );
 };
 
-export default trainResults;
+export default TrainResults;

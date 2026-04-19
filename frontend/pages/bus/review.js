@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { Navbar } from '../../components/Navbar';
+import PassengerDetails from '../../components/busResultsPage/ExpandedDetails/PassengerDetails';
 import {
   FaBus,
   FaMapMarkerAlt,
@@ -16,9 +17,6 @@ export default function ReviewBooking() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [passengers, setPassengers] = useState([
-    { id: 1, name: '', email: '', phone: '', age: '', gender: 'Male' },
-  ]);
 
   useEffect(() => {
     setIsClient(true);
@@ -33,6 +31,23 @@ export default function ReviewBooking() {
   }
 
   const { query } = router;
+  
+  const [passengers, setPassengers] = useState([{ id: 1, name: '', email: '', phone: '', age: '', gender: 'Male', idProof: '' }]);
+
+  // Parse and update passengers from URL when query is available
+  useEffect(() => {
+    if (query.passengers) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(query.passengers));
+        if (parsed && parsed.length > 0) {
+          setPassengers(parsed);
+        }
+      } catch (e) {
+        console.error('Error parsing passengers from URL:', e);
+      }
+    }
+  }, [query.passengers]);
+  
   const bookingDetails = {
     operator: query.operator || 'IntrCity SmartBus',
     busType: query.type || 'AC Sleeper (2+1)',
@@ -48,36 +63,12 @@ export default function ReviewBooking() {
     departure: query.departure || '22:30',
     arrival: query.arrival || '05:30',
     duration: query.duration || '7h',
-    seats: query.seats ? [query.seats] : ['1A', '1B', '1C'],
-    boardingPoint: 'Koyambedu',
-    droppingPoint: 'Electronic City',
+    seats: query.seats ? query.seats.split(',') : ['1A', '1B', '1C'],
+    boardingPoint: query.boarding || 'Koyambedu',
+    droppingPoint: query.dropping || 'Electronic City',
     fare: parseInt(query.price) || 1250,
     GST: 112,
     total: (parseInt(query.price) || 1250) + 224,
-  };
-
-  const addPassenger = () => {
-    const newId = Math.max(...passengers.map(p => p.id), 0) + 1;
-    setPassengers([
-      ...passengers,
-      { id: newId, name: '', email: '', phone: '', age: '', gender: 'Male' },
-    ]);
-  };
-
-  const removePassenger = (id) => {
-    if (passengers.length > 1) {
-      const updated = passengers.filter((passenger) => passenger.id !== id);
-      setPassengers(updated);
-    } else {
-      toast.error('At least one passenger is required');
-    }
-  };
-
-  const updatePassenger = (id, field, value) => {
-    const updated = passengers.map((passenger) =>
-      passenger.id === id ? { ...passenger, [field]: value } : passenger
-    );
-    setPassengers(updated);
   };
 
   const handleBooking = () => {
@@ -128,10 +119,10 @@ export default function ReviewBooking() {
                   </p>
                   <div className="flex items-center gap-3 mt-3">
                     <span className="bg-gradient-to-r from-green-50 to-green-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200">
-                      ✓ On Time
+                      On Time
                     </span>
                     <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
-                      <span className="text-yellow-500">★</span> 4.2
+                      <span className="text-yellow-500">4.2</span>
                     </span>
                   </div>
                 </div>
@@ -161,131 +152,10 @@ export default function ReviewBooking() {
               </div>
             </div>
 
-            <div className="p-8 bg-white border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow duration-300">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-1 h-6 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  Passenger Details
-                </h2>
-              </div>
-              {passengers.map((passenger, index) => (
-                <div
-                  key={passenger.id}
-                  className="pb-6 mb-6 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                        {index + 1}
-                      </div>
-                      <p className="text-base font-semibold text-gray-800">
-                        Passenger {index + 1}
-                      </p>
-                    </div>
-                    {passengers.length > 1 && (
-                      <button
-                        onClick={() => removePassenger(passenger.id)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200"
-                      >
-                        <span className="text-lg">−</span>
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                    <div>
-                      <label className="block mb-1 text-xs text-gray-500">
-                        Full Name
-                      </label>
-                      <div className="relative">
-                        <FaUser className="absolute text-xs text-gray-400 -translate-y-1/2 left-3 top-1/2" />
-                        <input
-                          type="text"
-                          value={passenger.name}
-                          onChange={(e) =>
-                            updatePassenger(passenger.id, 'name', e.target.value)
-                          }
-                          placeholder="As per ID"
-                          className="w-full py-2 pr-3 text-sm border rounded-lg pl-9 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-xs text-gray-500">
-                        Email
-                      </label>
-                      <div className="relative">
-                        <FaEnvelope className="absolute text-xs text-gray-400 -translate-y-1/2 left-3 top-1/2" />
-                        <input
-                          type="email"
-                          value={passenger.email}
-                          onChange={(e) =>
-                            updatePassenger(passenger.id, 'email', e.target.value)
-                          }
-                          placeholder="For ticket confirmation"
-                          className="w-full py-2 pr-3 text-sm border rounded-lg pl-9 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-xs text-gray-500">
-                        Phone
-                      </label>
-                      <div className="relative">
-                        <FaPhone className="absolute text-xs text-gray-400 -translate-y-1/2 left-3 top-1/2" />
-                        <input
-                          type="tel"
-                          value={passenger.phone}
-                          onChange={(e) =>
-                            updatePassenger(passenger.id, 'phone', e.target.value)
-                          }
-                          placeholder="10-digit mobile"
-                          className="w-full py-2 pr-3 text-sm border rounded-lg pl-9 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-xs text-gray-500">
-                        Age
-                      </label>
-                      <input
-                        type="number"
-                        value={passenger.age}
-                        onChange={(e) =>
-                          updatePassenger(passenger.id, 'age', e.target.value)
-                        }
-                        placeholder="Years"
-                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-xs text-gray-500">
-                        Gender
-                      </label>
-                      <select
-                        value={passenger.gender}
-                        onChange={(e) =>
-                          updatePassenger(passenger.id, 'gender', e.target.value)
-                        }
-                        className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      >
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {passengers.length < 6 && (
-                <button
-                  onClick={addPassenger}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200 border border-orange-200"
-                >
-                  <span className="text-lg">+</span>
-                  Add more passengers
-                </button>
-              )}
-            </div>
+            <PassengerDetails 
+              passengers={passengers} 
+              setPassengers={setPassengers}
+            />
 
             <div className="p-8 bg-white border-0 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow duration-300">
               <div className="flex items-center gap-3 mb-6">
@@ -379,19 +249,19 @@ export default function ReviewBooking() {
                     Base Fare ({bookingDetails.seats.length} seats)
                   </span>
                   <span className="font-semibold text-gray-900 text-lg">
-                    ₹{bookingDetails.fare}
+                    {bookingDetails.fare}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
                   <span className="text-gray-700 font-medium">GST (9%)</span>
                   <span className="font-semibold text-gray-900 text-lg">
-                    ₹{bookingDetails.GST}
+                    {bookingDetails.GST}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-4 px-4 bg-gray-50 rounded-lg">
                   <span className="text-gray-700 font-medium">CGST (9%)</span>
                   <span className="font-semibold text-gray-900 text-lg">
-                    ₹{bookingDetails.GST}
+                    {bookingDetails.GST}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-5 px-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl mt-4">
@@ -399,7 +269,7 @@ export default function ReviewBooking() {
                     Total Amount
                   </span>
                   <span className="text-2xl font-bold text-white">
-                    ₹{bookingDetails.total}
+                    {bookingDetails.total}
                   </span>
                 </div>
               </div>
@@ -434,7 +304,7 @@ export default function ReviewBooking() {
                 </div>
                 <div className="flex items-center gap-3 text-gray-700">
                   <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">📅</span>
+                    <span className="text-white text-xs font-bold"></span>
                   </div>
                   <span className="font-semibold">Travel Date: {bookingDetails.date}</span>
                 </div>

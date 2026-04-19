@@ -46,7 +46,7 @@ export default function FlightCard({ flight, onSelectFlight }) {
                 {flight.stops}
               </span>
             </div>
-            <p className="text-sm text-gray-500">{flight.type} â¢ {flight.aircraft}</p>
+            <p className="text-sm text-gray-500">{flight.type} - {flight.aircraft}</p>
 
             {/* Rating */}
             {flight.rating && (
@@ -187,7 +187,7 @@ export default function FlightCard({ flight, onSelectFlight }) {
                     key={index}
                     className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full"
                   >
-                    <span>â¢</span>
+                    <span>-</span>
                     {choice}
                   </span>
                 ))}

@@ -1,12 +1,15 @@
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import React, { useState } from 'react';
 import { GiSteeringWheel } from 'react-icons/gi';
+import { useRouter } from 'next/router';
 import { initialSeats } from '../../../lib/data/seats';
 import { boardingPoints, droppingPoints } from '../../../lib/data/boarding';
 import toast from 'react-hot-toast';
 import Bus3D from '../../3dComponents/Bus3D';
+import Tooltip from './Tooltip';
 
-const SeatSelection = ({ bus }) => {
+const SeatSelection = ({ bus, onSeatSelect, onBoardingSelect, onDroppingSelect }) => {
+  const router = useRouter();
   const [seatLayout, setSeatLayout] = useState(initialSeats);
   const [activeSelections, setActiveSelections] = useState([]);
   const [hoveredSeat, setHoveredSeat] = useState(null);
@@ -14,7 +17,7 @@ const SeatSelection = ({ bus }) => {
   const [selectedBoarding, setSelectedBoarding] = useState('');
   const [selectedDropping, setSelectedDropping] = useState('');
   const [error, setError] = useState('');
-  const [view3D, setView3D] = useState(false);
+  const [view3D, setView3D] = useState(true);
 
   const currentUser = {
     gender: 'male',
@@ -58,6 +61,12 @@ const SeatSelection = ({ bus }) => {
         ? prev?.filter((id) => id !== seatId)
         : [...prev, seatId]
     );
+    
+    const newSelections = activeSelections?.includes(seatId)
+      ? activeSelections?.filter((id) => id !== seatId)
+      : [...(activeSelections || []), seatId];
+    
+    if (onSeatSelect) onSeatSelect(newSelections);
   };
 
   return (
@@ -66,133 +75,157 @@ const SeatSelection = ({ bus }) => {
         <h1 className="mb-4 text-lg font-semibold text-gray-900">
           Choose Your Stops
         </h1>
-        <div className="flex w-full gap-4">
-          <div className="w-1/2">
-            <div className="flex items-center gap-2 mb-3">
-              <FaMapMarkerAlt className="w-4 h-4 text-green-600" />
-              <p className="text-sm font-semibold text-gray-800">
-                Boarding Point
-              </p>
-            </div>
-            <div
-              className={`p-2 space-y-2 overflow-y-auto border shadow-sm rounded-xl max-h-72 ${
-                error && (!selectedBoarding || !selectedDropping)
-                  ? 'border-red-300 bg-red-50/40'
-                  : 'border-gray-200'
-              }`}
-            >
-              {boardingPoints.map((point, idx) => (
-                <button
-                  key={`boarding-${idx}`}
-                  onClick={() => {
-                    setSelectedBoarding(point.location);
-                  }}
-                  className={`w-full px-3 py-2.5 text-left rounded-lg border-2 transition-all hover:shadow-md ${
-                    selectedBoarding === point.location
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-md'
-                      : 'bg-white text-gray-700 border-gray-100 hover:border-blue-300 hover:bg-blue-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`px-2 py-0.5 rounded text-xs font-bold ${
-                        selectedBoarding === point.location
-                          ? 'bg-white/20 text-white'
-                          : 'bg-green-100 text-green-700'
-                      }`}
-                    >
-                      {point.time}
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className={`font-medium ${
+        <div className="flex-col items-center justify-between w-full">
+          <div className="flex w-full gap-4">
+            <div className="w-1/2">
+              <div className="flex items-center gap-2 mb-3">
+                <FaMapMarkerAlt className="w-4 h-4 text-green-600" />
+                <p className="text-sm font-semibold text-gray-800">
+                  Boarding Point
+                </p>
+              </div>
+              <div
+                className={`p-2 space-y-2 overflow-y-auto border shadow-sm rounded-xl max-h-72 ${
+                  error && (!selectedBoarding || !selectedDropping)
+                    ? 'border-red-300 bg-red-50/40'
+                    : 'border-gray-200'
+                }`}
+              >
+                {boardingPoints.map((point, idx) => (
+                  <button
+                    key={`boarding-${idx}`}
+                    onClick={() => {
+                      setSelectedBoarding(point.location);
+                      if (onBoardingSelect) onBoardingSelect(point.location);
+                    }}
+                    className={`w-full px-3 py-2.5 text-left rounded-lg border-2 transition-all hover:shadow-md ${
+                      selectedBoarding === point.location
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                        : 'bg-white text-gray-700 border-gray-100 hover:border-blue-300 hover:bg-blue-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`px-2 py-0.5 rounded text-xs font-bold ${
                           selectedBoarding === point.location
-                            ? 'text-white'
-                            : 'text-gray-900'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-green-100 text-green-700'
                         }`}
                       >
-                        {point.location}
-                      </p>
-                      {point.address && (
+                        {point.time}
+                      </div>
+                      <div className="flex-1">
                         <p
-                          className={`text-xs mt-0.5 ${
+                          className={`font-medium ${
                             selectedBoarding === point.location
-                              ? 'text-blue-200'
-                              : 'text-gray-500'
+                              ? 'text-white'
+                              : 'text-gray-900'
                           }`}
                         >
-                          {point.address}
+                          {point.location}
                         </p>
-                      )}
+                        {point.address && (
+                          <p
+                            className={`text-xs mt-0.5 ${
+                              selectedBoarding === point.location
+                                ? 'text-blue-200'
+                                : 'text-gray-500'
+                            }`}
+                          >
+                            {point.address}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="w-1/2">
+              <div className="flex items-center gap-2 mb-3">
+                <FaMapMarkerAlt className="w-4 h-4 text-red-500" />
+                <p className="text-sm font-semibold text-gray-800">
+                  Dropping Point
+                </p>
+              </div>
+              <div
+                className={`p-2 space-y-2 overflow-y-auto border shadow-sm rounded-xl max-h-72 ${
+                  error && (!selectedBoarding || !selectedDropping)
+                    ? 'border-red-300 bg-red-50/40'
+                    : 'border-gray-200'
+                }`}
+              >
+                {droppingPoints.map((point, idx) => (
+                  <button
+                    key={`dropping-${idx}`}
+                    onClick={() => {
+                      setSelectedDropping(point.location);
+                      setError('');
+                      if (selectedBoarding && selectedDropping) setError('');
+                      if (onDroppingSelect) onDroppingSelect(point.location);
+                    }}
+                    className={`w-full px-3 py-2.5 text-left rounded-lg border-2 transition-all hover:shadow-md ${
+                      selectedDropping === point.location
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                        : 'bg-white text-gray-700 border-gray-100 hover:border-blue-300 hover:bg-blue-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`px-2 py-0.5 rounded text-xs font-bold ${
+                          selectedDropping === point.location
+                            ? 'bg-white/20 text-white'
+                            : 'bg-red-100 text-red-600'
+                        }`}
+                      >
+                        {point.time}
+                      </div>
+                      <div className="flex-1">
+                        <p
+                          className={`font-medium ${
+                            selectedDropping === point.location
+                              ? 'text-white'
+                              : 'text-gray-900'
+                          }`}
+                        >
+                          {point.location}
+                        </p>
+                        {point.address && (
+                          <p
+                            className={`text-xs mt-0.5 ${
+                              selectedDropping === point.location
+                                ? 'text-blue-200'
+                                : 'text-gray-500'
+                            }`}
+                          >
+                            {point.address}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="w-1/2">
-            <div className="flex items-center gap-2 mb-3">
-              <FaMapMarkerAlt className="w-4 h-4 text-red-500" />
-              <p className="text-sm font-semibold text-gray-800">
-                Dropping Point
+          <div className="flex items-center gap-4 p-3 mt-4 rounded-lg shadow-sm bg-gray-50">
+            <div className="flex-1">
+              <p className="text-xs text-gray-500">Boarding Point</p>
+              <p className="flex items-center gap-2 text-lg text-gray-900 font-large">
+                <FaMapMarkerAlt className="text-green-500" />
+                {selectedBoarding || 'Select above'}
               </p>
             </div>
-            <div
-              className={`p-2 space-y-2 overflow-y-auto border shadow-sm rounded-xl max-h-72 ${
-                error && (!selectedBoarding || !selectedDropping)
-                  ? 'border-red-300 bg-red-50/40'
-                  : 'border-gray-200'
-              }`}
-            >
-              {droppingPoints.map((point, idx) => (
-                <button
-                  key={`dropping-${idx}`}
-                  onClick={() => {
-                    setSelectedDropping(point.location);
-                    setError('');
-                    if (selectedBoarding && selectedDropping) setError('');
-                  }}
-                  className={`w-full px-3 py-2.5 text-left rounded-lg border-2 transition-all hover:shadow-md ${
-                    selectedDropping === point.location
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-md'
-                      : 'bg-white text-gray-700 border-gray-100 hover:border-blue-300 hover:bg-blue-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`px-2 py-0.5 rounded text-xs font-bold ${
-                        selectedDropping === point.location
-                          ? 'bg-white/20 text-white'
-                          : 'bg-red-100 text-red-600'
-                      }`}
-                    >
-                      {point.time}
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className={`font-medium ${
-                          selectedDropping === point.location
-                            ? 'text-white'
-                            : 'text-gray-900'
-                        }`}
-                      >
-                        {point.location}
-                      </p>
-                      {point.address && (
-                        <p
-                          className={`text-xs mt-0.5 ${
-                            selectedDropping === point.location
-                              ? 'text-blue-200'
-                              : 'text-gray-500'
-                          }`}
-                        >
-                          {point.address}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div className="flex-1">
+              <p className="text-xs text-gray-500">Dropping Point</p>
+              <p className="flex items-center gap-2 text-lg text-gray-900 font-large">
+                <FaMapMarkerAlt className="text-red-500" />
+                {selectedDropping || 'Select above'}
+              </p>
+            </div>
+            <div className="px-4 py-2 text-center rounded-lg bg-blue-50">
+              <p className="text-xs text-gray-500">Available Seats</p>
+              <p className="text-xl font-bold text-blue-600">{bus?.seats}</p>
             </div>
           </div>
         </div>
@@ -216,27 +249,6 @@ const SeatSelection = ({ bus }) => {
             {error}
           </div>
         )}
-
-        <div className="flex items-center gap-4 p-3 mb-4 rounded-lg shadow-sm bg-gray-50">
-          <div className="flex-1">
-            <p className="text-xs text-gray-500">Boarding Point</p>
-            <p className="flex items-center gap-2 text-xs font-medium text-gray-900">
-              <FaMapMarkerAlt className="text-green-500" />
-              {selectedBoarding || 'Select above'}
-            </p>
-          </div>
-          <div className="flex-1">
-            <p className="text-xs text-gray-500">Dropping Point</p>
-            <p className="flex items-center gap-2 text-xs font-medium text-gray-900">
-              <FaMapMarkerAlt className="text-red-500" />
-              {selectedDropping || 'Select above'}
-            </p>
-          </div>
-          <div className="px-4 py-2 text-center rounded-lg bg-blue-50">
-            <p className="text-xs text-gray-500">Available Seats</p>
-            <p className="text-xl font-bold text-blue-600">{bus?.seats}</p>
-          </div>
-        </div>
 
         {/* Status Indicators */}
         <div className="flex gap-4 mt-2 text-xs text-gray-600">
@@ -265,6 +277,8 @@ const SeatSelection = ({ bus }) => {
               seatLayout={seatLayout}
               activeSelections={activeSelections}
               handleSeatSelection={handleSeatSelection}
+              setHoveredSeat={setHoveredSeat}
+              setCursorPosition={setCursorPosition}
             />
           </div>
         ) : (
@@ -375,7 +389,29 @@ const SeatSelection = ({ bus }) => {
                       return;
                     }
 
-                    toast.success('Proceeding to booking...');
+                    const selectedSeatNames = activeSelections
+                      .map((id) => {
+                        const [rowIdx, colIdx] = id.split('-').map(Number);
+                        return seatLayout[rowIdx]?.[colIdx]?.name || id;
+                      })
+                      .join(',');
+
+                    const query = new URLSearchParams({
+                      operator: bus.operator,
+                      type: bus.type,
+                      from: bus.from,
+                      to: bus.to,
+                      date: bus.date,
+                      departure: bus.departure,
+                      arrival: bus.arrival,
+                      duration: bus.duration,
+                      price: bus.price,
+                      seats: selectedSeatNames,
+                      boarding: selectedBoarding,
+                      dropping: selectedDropping,
+                    }).toString();
+
+                    router.push(`/bus/review?${query}`);
                   }}
                   className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
@@ -419,43 +455,6 @@ const Seat = ({ seat, isSelected, onClick, onHover, onLeave }) => {
           isSelected ? 'border-green-500' : 'border-gray-400'
         }`}
       />
-    </div>
-  );
-};
-
-const Tooltip = ({ seat, position }) => {
-  return (
-    <div
-      className="fixed z-50 w-64 p-3 bg-white border shadow-xl pointer-events-none rounded-xl"
-      style={{ top: position?.y + 10, left: position?.x + 10 }}
-    >
-      <h2 className="mb-2 text-sm font-semibold text-gray-800">
-        Seat Information
-      </h2>
-
-      <div className="flex justify-between text-sm">
-        <span className="text-gray-500">Seat No</span>
-        <span className="font-medium">{seat?.name}</span>
-      </div>
-
-      <div className="flex justify-between mt-2 text-sm">
-        <span className="text-gray-500">Status</span>
-        <span className="font-medium capitalize">{seat?.type}</span>
-      </div>
-
-      {seat?.type !== 'booked' && (
-        <div className="flex justify-between mt-2 text-sm">
-          <span className="text-gray-500">Reservation</span>
-          <span className="font-medium capitalize">
-            {seat?.gender === 'ladies' ? 'Women Only' : 'Open'}
-          </span>
-        </div>
-      )}
-
-      <div className="flex justify-between pt-2 mt-3 text-sm border-t">
-        <span className="font-medium text-gray-600">Fare</span>
-        <span className="font-semibold text-green-600">₹{seat?.price}</span>
-      </div>
     </div>
   );
 };
