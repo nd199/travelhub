@@ -1,22 +1,17 @@
 package com.naren.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "bookings")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Booking {
 
     @Id
-    @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     @Column(name = "booking_reference", unique = true, nullable = false)
@@ -30,18 +25,11 @@ public class Booking {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private BookingStatus status;
-
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Payment> payments;
-
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Passenger> passengers;
 
     @Column(name = "total_amount", nullable = false)
-    private double totalAmount;
+    private Double totalAmount;
 
     @Column(name = "discount_amount")
     private Double discountAmount;
@@ -49,8 +37,16 @@ public class Booking {
     @Column(name = "tax_amount")
     private Double taxAmount;
 
-    @Column(name = "final_amount")
+    @Column(name = "final_amount", nullable = false)
     private Double finalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
+    private PaymentStatus paymentStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private BookingStatus status;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -58,35 +54,57 @@ public class Booking {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "travel_date", nullable = false)
-    private LocalDateTime travelDate;
-
-    @Column(name = "booking_source")
-    private String bookingSource;
-
-    @Column(name = "cancelled_at")
-    private LocalDateTime cancelledAt;
-
-    @Column(name = "cancellation_reason")
-    private String cancellationReason;
-
-    @Column(name = "refund_amount")
-    private Double refundAmount;
-
-    @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
-
-    @Column(name = "modification_reason")
-    private String modificationReason;
-
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
         updatedAt = createdAt;
+        if (Objects.isNull(bookingReference)) {
+            bookingReference = "BK" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
     }
 
     @PreUpdate
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    
+    // Manual getters and setters to bypass Lombok issues
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    
+    public String getBookingReference() { return bookingReference; }
+    public void setBookingReference(String bookingReference) { this.bookingReference = bookingReference; }
+    
+    public Users getUser() { return user; }
+    public void setUser(Users user) { this.user = user; }
+    
+    public Schedule getSchedule() { return schedule; }
+    public void setSchedule(Schedule schedule) { this.schedule = schedule; }
+    
+    public List<Passenger> getPassengers() { return passengers; }
+    public void setPassengers(List<Passenger> passengers) { this.passengers = passengers; }
+    
+    public Double getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
+    
+    public Double getDiscountAmount() { return discountAmount; }
+    public void setDiscountAmount(Double discountAmount) { this.discountAmount = discountAmount; }
+    
+    public Double getTaxAmount() { return taxAmount; }
+    public void setTaxAmount(Double taxAmount) { this.taxAmount = taxAmount; }
+    
+    public Double getFinalAmount() { return finalAmount; }
+    public void setFinalAmount(Double finalAmount) { this.finalAmount = finalAmount; }
+    
+    public PaymentStatus getPaymentStatus() { return paymentStatus; }
+    public void setPaymentStatus(PaymentStatus paymentStatus) { this.paymentStatus = paymentStatus; }
+    
+    public BookingStatus getStatus() { return status; }
+    public void setStatus(BookingStatus status) { this.status = status; }
+    
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

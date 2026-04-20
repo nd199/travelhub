@@ -2,27 +2,26 @@ package com.naren.backend.record;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public record PassengerRequest(
-        @NotBlank(message = "Booking ID is required")
-        String bookingId,
-
-        String seatId,
-
-        @NotBlank(message = "Name is required")
-        String name,
-
-        @NotNull(message = "Age is required")
-        Integer age,
-
-        String gender,
-
-        String contactNumber,
-
-        String email,
-
-        String idProofType,
-
-        String idProofNumber
-) {
-}
+    @NotBlank(message = "First name is required")
+    String firstName,
+    
+    @NotBlank(message = "Last name is required")
+    String lastName,
+    
+    @NotNull(message = "Date of birth is required")
+    LocalDate dateOfBirth,
+    
+    String gender,
+    
+    @NotBlank(message = "Nationality is required")
+    String nationality,
+    
+    String passportNumber,
+    
+    String phoneNumber,
+    
+    String email
+) {}

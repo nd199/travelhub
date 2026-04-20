@@ -1,8 +1,8 @@
 package com.naren.backend.controller;
 
 import com.naren.backend.dto.ScheduleResponse;
-import com.naren.backend.record.ScheduleRequest;
-import com.naren.backend.service.ScheduleServiceInterface;
+import com.naren.backend.dto.ScheduleRequest;
+import com.naren.backend.service.ScheduleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import java.util.List;
 @Tag(name = "Schedule")
 public class ScheduleController {
 
-    private final ScheduleServiceInterface scheduleService;
+    private final ScheduleService scheduleService;
 
-    public ScheduleController(ScheduleServiceInterface scheduleService) {
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
 

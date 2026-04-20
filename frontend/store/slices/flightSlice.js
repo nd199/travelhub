@@ -144,7 +144,7 @@ export const subscribeFlightAlert = createAsyncThunk(
 
 export const getFlightReviews = createAsyncThunk(
   'flight/getFlightReviews',
-  async ({ flightId, page = 1 }, { rejectWithValue }) => {
+  async ({ flightId = '', page = 1 }, { rejectWithValue }) => {
     try {
       const response = await api.get(`/flights/${flightId}/reviews?page=${page}`);
       return response.data;
@@ -158,7 +158,7 @@ export const getFlightReviews = createAsyncThunk(
 
 export const submitFlightReview = createAsyncThunk(
   'flight/submitFlightReview',
-  async ({ flightId, rating, comment }, { rejectWithValue }) => {
+  async ({ flightId = '', rating, comment }, { rejectWithValue }) => {
     try {
       const response = await api.post(`/flights/${flightId}/reviews`, {
         rating,
@@ -192,14 +192,7 @@ const initialState = {
   routes: [],
   priceCalendar: null,
   priceTrends: null,
-  reviews: {
-    [flightId]: {
-      reviews: [],
-      pagination: null,
-      isLoading: false,
-      error: null,
-    },
-  },
+  reviews: {},
   alerts: [],
   isLoading: false,
   error: null,

@@ -2,7 +2,7 @@ package com.naren.backend.controller;
 
 import com.naren.backend.dto.BookingResponse;
 import com.naren.backend.record.BookingRequest;
-import com.naren.backend.service.BookingServiceInterface;
+import com.naren.backend.service.BookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,9 @@ import java.util.List;
 @Tag(name = "Booking")
 public class BookingController {
 
-    private final BookingServiceInterface bookingService;
+    private final BookingService bookingService;
 
-    public BookingController(BookingServiceInterface bookingService) {
+    public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
     }
 

@@ -1,8 +1,8 @@
 package com.naren.backend.controller;
 
 import com.naren.backend.dto.LocationResponse;
-import com.naren.backend.record.LocationRequest;
-import com.naren.backend.service.LocationServiceInterface;
+import com.naren.backend.dto.LocationRequest;
+import com.naren.backend.service.LocationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import java.util.List;
 @Tag(name = "Location")
 public class LocationController {
 
-    private final LocationServiceInterface locationService;
+    private final LocationService locationService;
 
-    public LocationController(LocationServiceInterface locationService) {
+    public LocationController(LocationService locationService) {
         this.locationService = locationService;
     }
 

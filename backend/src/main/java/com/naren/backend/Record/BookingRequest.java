@@ -1,22 +1,24 @@
 package com.naren.backend.record;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 public record BookingRequest(
-        @NotBlank(message = "User ID is required")
-        String userId,
-
-        @NotBlank(message = "Schedule ID is required")
-        String scheduleId,
-
-        @NotNull(message = "Total amount is required")
-        Double totalAmount,
-
-        Double discountAmount,
-
-        Double taxAmount,
-
-        Double finalAmount
-) {
-}
+    @NotNull(message = "Schedule ID is required")
+    Long scheduleId,
+    
+    @NotNull(message = "User ID is required")
+    Long userId,
+    
+    @NotNull(message = "Passengers are required")
+    List<PassengerRequest> passengers,
+    
+    @NotNull(message = "Total amount is required")
+    Double totalAmount,
+    
+    Double discountAmount,
+    
+    Double taxAmount,
+    
+    Double finalAmount
+) {}

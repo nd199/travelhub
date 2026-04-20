@@ -1,8 +1,8 @@
 package com.naren.backend.controller;
 
 import com.naren.backend.dto.VehicleResponse;
-import com.naren.backend.record.VehicleRequest;
-import com.naren.backend.service.VehicleServiceInterface;
+import com.naren.backend.dto.VehicleRequest;
+import com.naren.backend.service.VehicleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import java.util.List;
 @Tag(name = "Vehicle")
 public class VehicleController {
 
-    private final VehicleServiceInterface vehicleService;
+    private final VehicleService vehicleService;
 
-    public VehicleController(VehicleServiceInterface vehicleService) {
+    public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
     }
 

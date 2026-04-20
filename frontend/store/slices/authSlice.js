@@ -4,6 +4,26 @@ import axios from 'axios';
 // API base URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+// LocalStorage helper for SSR compatibility
+const getLocalStorageItem = (key) => {
+  if (typeof window !== 'undefined') {
+    return getLocalStorageItem(key);
+  }
+  return null;
+};
+
+const setLocalStorageItem = (key, value) => {
+  if (typeof window !== 'undefined') {
+    setLocalStorageItem(key, value);
+  }
+};
+
+const removeLocalStorageItem = (key) => {
+  if (typeof window !== 'undefined') {
+    removeLocalStorageItem(key);
+  }
+};
+
 // Create axios instance with default headers
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -15,7 +35,7 @@ const api = axios.create({
 // Add request interceptor to include auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getLocalStorageItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,14 +54,14 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = getLocalStorageItem('refreshToken');
         if (refreshToken) {
           const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
             refreshToken,
           });
           
           const { token } = response.data;
-          localStorage.setItem('token', token);
+          setLocalStorageItem('token', token);
           
           // Retry the original request
           originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -49,8 +69,8 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         // Refresh failed, logout user
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        removeLocalStorageItem('token');
+        removeLocalStorageItem('refreshToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -94,13 +114,13 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await api.post('/auth/logout');
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
+      removeLocalStorageItem('token');
+      removeLocalStorageItem('refreshToken');
       return {};
     } catch (error) {
       // Even if logout fails on server, clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
+      removeLocalStorageItem('token');
+      removeLocalStorageItem('refreshToken');
       return {};
     }
   }
@@ -110,7 +130,7 @@ export const refreshToken = createAsyncThunk(
   'auth/refreshToken',
   async (_, { rejectWithValue }) => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = getLocalStorageItem('refreshToken');
       if (!refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -121,8 +141,8 @@ export const refreshToken = createAsyncThunk(
       
       return response.data;
     } catch (error) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
+      removeLocalStorageItem('token');
+      removeLocalStorageItem('refreshToken');
       return rejectWithValue('Session expired. Please login again.');
     }
   }
@@ -143,8 +163,8 @@ export const verifyToken = createAsyncThunk(
 // Initial state
 const initialState = {
   user: null,
-  token: localStorage.getItem('token'),
-  refreshToken: localStorage.getItem('refreshToken'),
+  token: getLocalStorageItem('token'),
+  refreshToken: getLocalStorageItem('refreshToken'),
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -182,8 +202,8 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.error = null;
-        localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        setLocalStorageItem('token', action.payload.token);
+        setLocalStorageItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -192,8 +212,8 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.refreshToken = null;
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        removeLocalStorageItem('token');
+        removeLocalStorageItem('refreshToken');
       })
       // Register
       .addCase(registerUser.pending, (state) => {
@@ -207,8 +227,8 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.error = null;
-        localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        setLocalStorageItem('token', action.payload.token);
+        setLocalStorageItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -217,8 +237,8 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.refreshToken = null;
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        removeLocalStorageItem('token');
+        removeLocalStorageItem('refreshToken');
       })
       // Logout
       .addCase(logoutUser.fulfilled, (state) => {
@@ -232,9 +252,9 @@ const authSlice = createSlice({
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
-        localStorage.setItem('token', action.payload.token);
+        setLocalStorageItem('token', action.payload.token);
         if (action.payload.refreshToken) {
-          localStorage.setItem('refreshToken', action.payload.refreshToken);
+          setLocalStorageItem('refreshToken', action.payload.refreshToken);
         }
       })
       .addCase(refreshToken.rejected, (state) => {
@@ -255,8 +275,8 @@ const authSlice = createSlice({
         state.refreshToken = null;
         state.isAuthenticated = false;
         state.isInitialized = true;
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        removeLocalStorageItem('token');
+        removeLocalStorageItem('refreshToken');
       });
   },
 });

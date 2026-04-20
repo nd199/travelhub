@@ -3,7 +3,7 @@ package com.naren.backend.controller;
 import com.naren.backend.dto.UserResponse;
 import com.naren.backend.record.UserRequest;
 import com.naren.backend.record.UserUpdateRequest;
-import com.naren.backend.service.UserServiceInterface;
+import com.naren.backend.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,9 @@ import java.util.List;
 @Tag(name = "User")
 public class UserController {
 
-    private final UserServiceInterface userService;
+    private final UserService userService;
 
-    public UserController(UserServiceInterface userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 

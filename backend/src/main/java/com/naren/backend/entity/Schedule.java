@@ -84,4 +84,13 @@ public class Schedule {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    
+    // Manual getter to ensure getId() method exists
+    public String getId() {
+        return id;
+    }
+    
+    public void setId(String id) {
+        this.id = id;
+    }
 }

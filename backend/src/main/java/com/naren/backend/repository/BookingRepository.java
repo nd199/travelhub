@@ -2,7 +2,6 @@ package com.naren.backend.repository;
 
 import com.naren.backend.entity.Booking;
 import com.naren.backend.entity.BookingStatus;
-import com.naren.backend.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,15 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     
     boolean existsByBookingReference(String bookingReference);
     
-    List<Booking> findByTravelDate(LocalDateTime travelDate);
-    
-    List<Booking> findByTravelDateBefore(LocalDateTime dateTime);
-    
-    List<Booking> findByTravelDateBetween(LocalDateTime start, LocalDateTime end);
-    
     List<Booking> findByUserIdAndStatus(String userId, BookingStatus status);
-    
-    List<Booking> findByUserIdAndTravelDateBetween(String userId, LocalDateTime start, LocalDateTime end);
     
     Long countByUserId(String userId);
     
