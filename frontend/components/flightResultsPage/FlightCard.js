@@ -27,7 +27,7 @@ export default function FlightCard({ flight, onSelectFlight }) {
 
   return (
     <div
-      className={`bg-white border rounded-xl transition-all p-4 ${isExpanded ? 'border-purple-400 shadow-md' : 'border-purple-200 hover:shadow-md hover:border-purple-300'}`}
+      className={`bg-white border rounded-xl transition-all p-4 ${isExpanded ? 'border-secondary shadow-md' : 'border-tertiary-lighter hover:shadow-md hover:border-tertiary-light'}`}
     >
       {/* Main Card */}
       <div className="flex flex-col gap-4">
@@ -109,8 +109,8 @@ export default function FlightCard({ flight, onSelectFlight }) {
               onClick={() => onSelectFlight(flight)}
               className={`px-6 py-2 text-sm font-medium rounded-lg transition-colors ${
                 isExpanded
-                  ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                  : 'bg-purple-600 text-white hover:bg-purple-700'
+                  ? 'bg-secondary text-white hover:bg-secondary-dark'
+                  : 'bg-secondary text-white hover:bg-secondary-dark'
               }`}
             >
               {isExpanded ? 'Hide Details' : 'Book Now'}

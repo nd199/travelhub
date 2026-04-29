@@ -69,4 +69,31 @@ public class Location {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    // Manual getters to bypass Lombok issues
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getCity() { return city; }
+    public String getState() { return state; }
+    public String getCountry() { return country; }
+    public Double getLatitude() { return latitude; }
+    public Double getLongitude() { return longitude; }
+    public LocationType getType() { return type; }
+    public String getAddress() { return address; }
+    public String getPincode() { return pincode; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    
+    public void setId(String id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setCity(String city) { this.city = city; }
+    public void setState(String state) { this.state = state; }
+    public void setCountry(String country) { this.country = country; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public void setType(LocationType type) { this.type = type; }
+    public void setAddress(String address) { this.address = address; }
+    public void setPincode(String pincode) { this.pincode = pincode; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

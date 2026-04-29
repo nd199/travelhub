@@ -24,11 +24,11 @@ export function Navbar({ variant = 'landing', isLoggedIn = false }) {
       : 'bg-transparent'
   }`;
 
-  // Non-home page styles (light blue with enhanced styling)
-  const nonHomeClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 ${
+  // Non-home page styles (sophisticated gradient with black foundation)
+  const nonHomeClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gradient-to-r from-primary via-secondary-light to-tertiary ${
     isScrolled
-      ? 'shadow-xl backdrop-blur-md border-b border-blue-400/30'
-      : 'shadow-lg backdrop-blur-sm border-b border-blue-400/20'
+      ? 'shadow-xl backdrop-blur-md border-b border-secondary/30'
+      : 'shadow-lg backdrop-blur-sm border-b border-secondary-light/20'
   }`;
 
   return (
@@ -43,7 +43,7 @@ export function Navbar({ variant = 'landing', isLoggedIn = false }) {
         </h1>
 
         {isHomePage ? (
-          <button className="px-5 py-2 font-semibold text-black transition bg-white rounded-full hover:bg-gray-200">
+          <button className="px-5 py-2 font-semibold text-tertiary transition bg-white rounded-full hover:bg-tertiary-lighter">
             Login
           </button>
         ) : (
@@ -81,7 +81,7 @@ export function Navbar({ variant = 'landing', isLoggedIn = false }) {
                 </button>
               </div>
             ) : (
-              <button className="px-6 py-2 font-semibold text-blue-600 transition bg-white rounded-full hover:bg-gray-100 hover:shadow-lg">
+              <button className="px-6 py-2 font-semibold text-tertiary transition bg-white rounded-full hover:bg-tertiary-lighter hover:shadow-lg">
                 Login
               </button>
             )}

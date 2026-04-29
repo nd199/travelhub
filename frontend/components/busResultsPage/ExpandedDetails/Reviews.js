@@ -2,7 +2,7 @@ import React from 'react';
 import { IoStar, IoPerson } from 'react-icons/io5';
 import { sampleReviews, reviewsSummary } from '../../../lib/data/reviews';
 
-const Reviews = () => {
+const Reviews = ({ bus }) => {
   return (
     <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Reviews</h2>

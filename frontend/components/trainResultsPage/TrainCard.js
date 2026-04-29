@@ -325,7 +325,7 @@ export default function TrainCard({ train, onSelectTrain }) {
       <div className="p-6 border-t border-gray-100">
         <button
           onClick={() => onSelectTrain(train)}
-          className="w-full py-4 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          className="w-full py-4 bg-secondary text-white font-bold rounded-xl hover:bg-secondary-dark transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
         >
           Book Now
         </button>

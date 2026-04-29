@@ -1,6 +1,7 @@
 package com.naren.backend.controller;
 
 import com.naren.backend.dto.BusResponse;
+import com.naren.backend.dto.ExpandedBusResponse;
 import com.naren.backend.service.BusService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,10 @@ public class BusController {
             @RequestParam(required = false) String to,
             @RequestParam(required = false) String date) {
         return ResponseEntity.ok(busService.searchBuses(from, to, date));
+    }
+
+    @GetMapping("/{scheduleId}/expanded")
+    public ResponseEntity<ExpandedBusResponse> getExpandedBusDetails(@PathVariable String scheduleId) {
+        return ResponseEntity.ok(busService.getExpandedBusDetails(scheduleId));
     }
 }

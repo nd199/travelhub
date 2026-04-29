@@ -3,6 +3,7 @@ package com.naren.backend.service;
 import com.naren.backend.dto.LocationRequest;
 import com.naren.backend.dto.LocationResponse;
 import com.naren.backend.entity.Location;
+import com.naren.backend.entity.LocationType;
 import com.naren.backend.repository.LocationRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,18 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse createLocation(LocationRequest request) {
-        return null; // Simplified implementation
+        Location location = new Location();
+        location.setName(request.name());
+        location.setCity(request.city());
+        location.setState(request.state());
+        location.setCountry(request.country());
+        location.setLatitude(request.latitude());
+        location.setLongitude(request.longitude());
+        location.setType(LocationType.valueOf(request.type()));
+        location.setAddress(request.address());
+        location.setPincode(request.pincode());
+        Location saved = locationRepository.save(location);
+        return mapToLocationResponse(saved);
     }
 
     @Override
@@ -39,37 +51,63 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<LocationResponse> getLocationsByType(String type) {
-        return List.of(); // Simplified implementation
+        LocationType locationType = LocationType.valueOf(type);
+        return locationRepository.findByType(locationType).stream()
+                .map(this::mapToLocationResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<LocationResponse> getLocationsByCity(String city) {
-        return List.of(); // Simplified implementation
+        return locationRepository.findByCity(city).stream()
+                .map(this::mapToLocationResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<LocationResponse> getLocationsByCountry(String country) {
-        return List.of(); // Simplified implementation
+        return locationRepository.findByCountryOrderByCity(country).stream()
+                .map(this::mapToLocationResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<LocationResponse> getLocationsByState(String state) {
-        return List.of(); // Simplified implementation
+        return locationRepository.findByState(state).stream()
+                .map(this::mapToLocationResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<LocationResponse> getLocationsByCityAndType(String city, String type) {
-        return List.of(); // Simplified implementation
+        LocationType locationType = LocationType.valueOf(type);
+        return locationRepository.findByCityAndType(city, locationType).stream()
+                .map(this::mapToLocationResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Long getLocationCountByType(String type) {
-        return 0L; // Simplified implementation
+        LocationType locationType = LocationType.valueOf(type);
+        return locationRepository.countByType(locationType);
     }
 
     @Override
     public LocationResponse updateLocation(String id, LocationRequest request) {
-        return null; // Simplified implementation
+        return locationRepository.findById(id)
+                .map(location -> {
+                    location.setName(request.name());
+                    location.setCity(request.city());
+                    location.setState(request.state());
+                    location.setCountry(request.country());
+                    location.setLatitude(request.latitude());
+                    location.setLongitude(request.longitude());
+                    location.setType(LocationType.valueOf(request.type()));
+                    location.setAddress(request.address());
+                    location.setPincode(request.pincode());
+                    return mapToLocationResponse(locationRepository.save(location));
+                })
+                .orElse(null);
     }
 
     @Override
@@ -86,9 +124,9 @@ public class LocationServiceImpl implements LocationService {
                 location.getCountry(),
                 location.getLatitude(),
                 location.getLongitude(),
-                null, // type
-                null, // address
-                null, // pincode
+                location.getType() != null ? location.getType().name() : null,
+                location.getAddress(),
+                location.getPincode(),
                 location.getCreatedAt(),
                 location.getUpdatedAt()
         );

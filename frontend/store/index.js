@@ -7,13 +7,15 @@ import userSlice from './slices/userSlice';
 import bookingSlice from './slices/bookingSlice';
 import flightSlice from './slices/flightSlice';
 import trainSlice from './slices/trainSlice';
+import busSlice from './slices/busSlice';
+import citySlice from './slices/citySlice';
 
 // Persist configuration
 const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['auth', 'user'], // Only persist auth and user data
-  blacklist: ['booking', 'flight', 'train'], // Don't persist booking and search data
+  blacklist: ['booking', 'flight', 'train', 'bus', 'city'], // Don't persist booking and search data
 };
 
 // Combine reducers
@@ -23,6 +25,8 @@ const rootReducer = combineReducers({
   booking: bookingSlice,
   flight: flightSlice,
   train: trainSlice,
+  bus: busSlice,
+  city: citySlice,
 });
 
 // Create persisted reducer

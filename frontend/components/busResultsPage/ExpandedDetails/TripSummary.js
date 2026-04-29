@@ -1,6 +1,6 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaChair, FaBus, FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { initialSeats } from '../../../lib/data/seats';
 
 const TripSummary = ({ bus, selectedSeats, boardingPoint, droppingPoint, passengers = [] }) => {
   const seatPrice = bus?.price || 500;

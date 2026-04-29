@@ -512,8 +512,8 @@ export default FilterSideBar;
 /* REUSABLE COMPONENTS */
 
 const FilterSection = ({ title, icon, children }) => (
-  <div className="p-3 border rounded-xl bg-orange-50">
-    <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-gray-800">
+  <div className="p-3 border rounded-xl bg-gradient-to-br from-primary/5 to-white border-tertiary-lighter/30">
+    <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-primary">
       {icon}
       {title}
     </div>
@@ -522,32 +522,32 @@ const FilterSection = ({ title, icon, children }) => (
 );
 
 const Checkbox = ({ label, icon, checked, onChange }) => (
-  <label className="flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-white">
+  <label className="flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-tertiary-lighter/10">
     <input
       type="checkbox"
       checked={checked}
       onChange={onChange}
-      className="accent-orange-500"
+      className="accent-secondary"
     />
-    {icon && <span className="text-gray-500">{icon}</span>}
-    <span className="text-sm text-gray-700">{label}</span>
+    {icon && <span className="text-tertiary-light">{icon}</span>}
+    <span className="text-sm text-tertiary">{label}</span>
   </label>
 );
 
 const SearchInput = ({ value, setValue, placeholder }) => (
   <div className="relative">
-    <FaSearch className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+    <FaSearch className="absolute w-4 h-4 text-tertiary-light -translate-y-1/2 left-3 top-1/2" />
     <input
       value={value}
       onChange={(e) => setValue(e.target.value)}
       placeholder={placeholder}
-      className="w-full py-2 pl-10 pr-3 mb-2 text-sm text-center border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full py-2 pl-10 pr-3 mb-2 text-sm text-center border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary border-tertiary-lighter/30"
     />
   </div>
 );
 
 const List = ({ children }) => (
-  <div className="overflow-y-auto bg-white border rounded-lg max-h-32">
+  <div className="overflow-y-auto bg-white border rounded-lg max-h-32 border-tertiary-lighter/30">
     {children}
   </div>
 );
@@ -555,7 +555,7 @@ const List = ({ children }) => (
 const ListItem = ({ children, onClick }) => (
   <button
     onClick={onClick}
-    className="block w-full px-3 py-2 text-sm text-left hover:bg-blue-50"
+    className="block w-full px-3 py-2 text-sm text-left hover:bg-tertiary-lighter/10 text-tertiary"
   >
     {children}
   </button>
@@ -566,11 +566,11 @@ const PopularFilter = ({ label, icon, active, onClick }) => (
     onClick={onClick}
     className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
       active
-        ? 'bg-orange-500 text-white border-orange-500'
-        : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400'
+        ? 'bg-secondary text-white border-secondary'
+        : 'bg-white text-tertiary border-tertiary-lighter/30 hover:border-tertiary-light'
     }`}
   >
-    <span className={active ? 'text-white' : 'text-orange-500'}>{icon}</span>
+    <span className={active ? 'text-white' : 'text-secondary'}>{icon}</span>
     <span className="text-xs font-medium">{label}</span>
   </button>
 );

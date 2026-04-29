@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { motion } from 'framer-motion'
-import { cities, cityCodes, mockFlightResults } from '../../lib/data/lib'
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCities } from '../../store/slices/citySlice';
 
 const flightValidationSchema = Yup.object({
   fromCity: Yup.string()
@@ -22,8 +23,17 @@ const flightValidationSchema = Yup.object({
 })
 
 export function FlightForm({ onTabChange, activeTab: externalTab }) {
+  const dispatch = useDispatch();
+  const { cities, loading: citiesLoading } = useSelector((state) => state.city);
   const [internalTab, setInternalTab] = useState("flight")
   const activeTab = externalTab !== undefined ? externalTab : internalTab
+
+  // Fetch cities on component mount
+  useEffect(() => {
+    if (cities.length === 0) {
+      dispatch(fetchCities());
+    }
+  }, [dispatch, cities.length]);
 
   const [showSuccess, setShowSuccess] = useState(false)
   const [fromSuggestions, setFromSuggestions] = useState([])
@@ -83,8 +93,7 @@ export function FlightForm({ onTabChange, activeTab: externalTab }) {
     formik.setFieldValue('fromCity', value)
     if (value.length > 0) {
       const filtered = cities.filter(city => 
-        city.toLowerCase().includes(value.toLowerCase()) ||
-        cityCodes[city].toLowerCase().includes(value.toLowerCase())
+        city.toLowerCase().includes(value.toLowerCase())
       ).filter(city => city !== formik.values.toCity)
       setFromSuggestions(filtered.slice(0, 5))
       setShowFromDropdown(filtered.length > 0)
@@ -99,8 +108,7 @@ export function FlightForm({ onTabChange, activeTab: externalTab }) {
     formik.setFieldValue('toCity', value)
     if (value.length > 0) {
       const filtered = cities.filter(city => 
-        city.toLowerCase().includes(value.toLowerCase()) ||
-        cityCodes[city].toLowerCase().includes(value.toLowerCase())
+        city.toLowerCase().includes(value.toLowerCase())
       ).filter(city => city !== formik.values.fromCity)
       setToSuggestions(filtered.slice(0, 5))
       setShowToDropdown(filtered.length > 0)
@@ -217,23 +225,19 @@ export function FlightForm({ onTabChange, activeTab: externalTab }) {
                 {formik.errors.fromCity && formik.touched.fromCity && (
                   <p className="mt-1 text-xs text-red-400">{formik.errors.fromCity}</p>
                 )}
-                {formik.values.fromCity && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-white/60 bg-white/10 px-2 py-0.5 rounded">{cityCodes[formik.values.fromCity]}</span>
-                )}
-                {showFromDropdown && fromSuggestions.length > 0 && (
-                  <ul className="absolute z-30 w-full mt-1 max-h-48 overflow-auto bg-black/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-xl">
-                    {fromSuggestions.map((city) => (
-                      <li
-                        key={city}
-                        onClick={() => selectFromCity(city)}
-                        className="flex justify-between items-center px-4 py-2.5 text-sm cursor-pointer hover:bg-white/10 text-white/80 hover:text-white transition-colors border-b border-white/5 last:border-0"
-                      >
-                        <span className="font-medium">{city}</span>
-                        <span className="text-xs text-white/40 font-mono">{cityCodes[city]}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                 {showFromDropdown && fromSuggestions.length > 0 && (
+                   <ul className="absolute z-30 w-full mt-1 max-h-48 overflow-auto bg-black/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-xl">
+                     {fromSuggestions.map((city) => (
+                       <li
+                         key={city}
+                         onClick={() => selectFromCity(city)}
+                         className="flex justify-between items-center px-4 py-2.5 text-sm cursor-pointer hover:bg-white/10 text-white/80 hover:text-white transition-colors border-b border-white/5 last:border-0"
+                       >
+                         <span className="font-medium">{city}</span>
+                       </li>
+                     ))}
+                   </ul>
+                 )}
               </div>
 
               <button
@@ -264,23 +268,19 @@ export function FlightForm({ onTabChange, activeTab: externalTab }) {
                 {formik.errors.toCity && formik.touched.toCity && (
                   <p className="mt-1 text-xs text-red-400">{formik.errors.toCity}</p>
                 )}
-                {formik.values.toCity && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-white/60 bg-white/10 px-2 py-0.5 rounded">{cityCodes[formik.values.toCity]}</span>
-                )}
-                {showToDropdown && toSuggestions.length > 0 && (
-                  <ul className="absolute z-30 w-full mt-1 max-h-48 overflow-auto bg-black/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-xl">
-                    {toSuggestions.map((city) => (
-                      <li
-                        key={city}
-                        onClick={() => selectToCity(city)}
-                        className="flex justify-between items-center px-4 py-2.5 text-sm cursor-pointer hover:bg-white/10 text-white/80 hover:text-white transition-colors border-b border-white/5 last:border-0"
-                      >
-                        <span className="font-medium">{city}</span>
-                        <span className="text-xs text-white/40 font-mono">{cityCodes[city]}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                 {showToDropdown && toSuggestions.length > 0 && (
+                   <ul className="absolute z-30 w-full mt-1 max-h-48 overflow-auto bg-black/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-xl">
+                     {toSuggestions.map((city) => (
+                       <li
+                         key={city}
+                         onClick={() => selectToCity(city)}
+                         className="flex justify-between items-center px-4 py-2.5 text-sm cursor-pointer hover:bg-white/10 text-white/80 hover:text-white transition-colors border-b border-white/5 last:border-0"
+                       >
+                         <span className="font-medium">{city}</span>
+                       </li>
+                     ))}
+                   </ul>
+                 )}
               </div>
 
               <div className="w-px h-12 bg-white/20" />

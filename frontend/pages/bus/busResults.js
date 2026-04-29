@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { Navbar } from '../../components/Navbar';
 import FilterSideBar from '../../components/busResultsPage/FilterSideBar';
 import SortBar from '../../components/busResultsPage/SortBar';
 import BusList from '../../components/busResultsPage/BusList';
 import BusSearchHeader from '../../components/forms/BusSearchHeader';
-import { busesData } from '../../lib/data/buses';
+import { searchBuses, setSearchParams } from '../../store/slices/busSlice';
 
 const busResults = () => {
   const router = useRouter();
   const { query } = router;
-  const [buses] = useState(busesData);
-  const [searchParams, setSearchParams] = useState({
+  const dispatch = useDispatch();
+  const { buses, loading, error } = useSelector((state) => state.bus);
+  const [searchParams, setSearchParamsState] = useState({
     from: '',
     to: '',
     date: '',
@@ -20,22 +22,29 @@ const busResults = () => {
 
   useEffect(() => {
     if (query.from && query.to && query.date) {
-      setSearchParams({
+      const params = {
         from: query.from,
         to: query.to,
         date: query.date,
-      });
+      };
+      setSearchParamsState(params);
+      dispatch(setSearchParams(params));
+      dispatch(searchBuses(params));
     }
-  }, [query]);
+  }, [query, dispatch]);
 
-  const [filtered, setFiltered] = useState(buses);
+  const [filtered, setFiltered] = useState([]);
+
+  useEffect(() => {
+    setFiltered(buses);
+  }, [buses]);
 
   const handleSelectBus = (bus) => {
     const query = new URLSearchParams({
       operator: bus.operator,
-      from: bus.boardingPoint.split(' ')[0] || 'Chennai',
-      to: bus.droppingPoint.split(' ')[0] || 'Bangalore',
-      date: '2026-04-11',
+      from: bus.from,
+      to: bus.to,
+      date: bus.date,
       departure: bus.departure,
       arrival: bus.arrival,
       duration: bus.duration,
@@ -57,9 +66,16 @@ const busResults = () => {
               to: searchParams.to || 'Bangalore',
               departure: searchParams.date || '2026-04-10',
             }}
-            onSearch={(data) =>
-              toast.success(`Searching: ${data.from} to ${data.to}`)
-            }
+            onSearch={(data) => {
+              const params = {
+                from: data.from,
+                to: data.to,
+                date: data.departure,
+              };
+              dispatch(setSearchParams(params));
+              dispatch(searchBuses(params));
+              toast.success(`Searching: ${data.from} to ${data.to}`);
+            }}
           />
         </div>
       </div>
@@ -71,9 +87,13 @@ const busResults = () => {
         </div>
 
         {/* Results Area - Scrollable */}
-        <div className="flex-1 p-6">
-          <SortBar buses={filtered} setFiltered={setFiltered} />
-          <BusList buses={filtered} onSelectBus={handleSelectBus} />
+        <div className="flex-1 p-6 space-y-10">
+          <div className="sticky top-[120px] z-30 py-2">
+            <SortBar buses={filtered} setFiltered={setFiltered} />
+          </div>
+          <div className="overflow-y-auto">
+            <BusList buses={filtered} onSelectBus={handleSelectBus} />
+          </div>
         </div>
       </div>
     </div>

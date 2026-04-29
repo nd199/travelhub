@@ -1,5 +1,7 @@
 import React from 'react';
-import { busAmenities, busPhotos } from '../../../lib/data/amenities';
+import { useSelector } from 'react-redux';
+// Removed hardcoded data import - using backend API via Redux store
+// import { busAmenities, busPhotos } from '../../../lib/data/amenities';
 
 const photoLabels = [
   'Exterior',
@@ -9,13 +11,21 @@ const photoLabels = [
   'RestRoom',
 ];
 
-export default function AmenitiesAndPhotos() {
+export default function AmenitiesAndPhotos({ vehicleId }) {
+  const { amenities, photos, isLoading } = useSelector(state => state.booking);
+
   return (
     <div className="w-full p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
       {/* Amenities Section */}
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      ) : (
+        <>
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Amenities</h2>
       <div className="flex flex-wrap gap-3 mb-6">
-        {busAmenities.map((amenity, index) => (
+        {(amenities || []).map((amenity, index) => (
           <div
             key={index}
             className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all ${
@@ -43,7 +53,7 @@ export default function AmenitiesAndPhotos() {
       {/* Photos Section */}
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Photos</h2>
       <div className="grid grid-cols-4 gap-3">
-        {busPhotos.map((photo, index) => (
+        {(photos || []).map((photo, index) => (
           <div
             key={index}
             className="relative h-40 overflow-hidden rounded-2xl shadow-lg group"
@@ -61,6 +71,8 @@ export default function AmenitiesAndPhotos() {
           </div>
         ))}
       </div>
+        </>
+      )}
     </div>
   );
 }

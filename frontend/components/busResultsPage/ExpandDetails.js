@@ -19,8 +19,8 @@ import { GiCarSeat } from 'react-icons/gi';
 import { MdAirlineSeatReclineExtra } from 'react-icons/md';
 import { FaUserPlus } from 'react-icons/fa';
 
-const ExpandDetails = ({ bus, onClose }) => {
-  const [activeTab, setActiveTab] = useState('seats');
+const ExpandDetails = ({ bus, onClose, initialTab = 'seats' }) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [selectedBoarding, setSelectedBoarding] = useState('');
   const [selectedDropping, setSelectedDropping] = useState('');
@@ -44,15 +44,15 @@ const ExpandDetails = ({ bus, onClose }) => {
       label: 'Trip Summary',
       icon: FaReceipt,
     },
-    { id: 'amenities', label: 'Amenities', icon: FaWifi },
-    { id: 'reviews', label: 'Reviews', icon: FaStar },
-    { id: 'policies', label: 'Policies', icon: FaFileAlt },
-    { id: 'boarding', label: 'Boarding', icon: FaMapMarkerAlt },
+      { id: 'amenities', label: 'Amenities', icon: FaWifi },
+      { id: 'reviews', label: 'Reviews', icon: FaStar },
+      { id: 'policies', label: 'Policies', icon: FaFileAlt },
+      { id: 'boarding', label: 'Boarding', icon: FaMapMarkerAlt },
   ];
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-1 p-1 mb-4 overflow-x-auto bg-orange-100 rounded-xl">
+       <div className="flex items-center gap-1 p-1 mb-4 bg-orange-100 rounded-xl">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -71,7 +71,7 @@ const ExpandDetails = ({ bus, onClose }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="p-4 bg-white border border-gray-200 rounded-xl max-h-[500px] overflow-y-auto">
+       <div className="p-4 bg-white border border-gray-200 rounded-xl">
         {activeTab === 'seats' && (
           <SelectSeats 
             bus={bus} 
@@ -95,10 +95,10 @@ const ExpandDetails = ({ bus, onClose }) => {
             passengers={passengers}
           />
         )}
-        {activeTab === 'amenities' && <AmenitiesAndPhotos bus={bus} />}
-        {activeTab === 'reviews' && <Reviews bus={bus} />}
-        {activeTab === 'policies' && <Policies bus={bus} />}
-        {activeTab === 'boarding' && <Boarding bus={bus} />}
+          {activeTab === 'amenities' && <AmenitiesAndPhotos vehicleId={bus.id} />}
+          {activeTab === 'reviews' && <Reviews bus={bus} />}
+          {activeTab === 'policies' && <Policies bus={bus} />}
+          {activeTab === 'boarding' && <Boarding busId={bus.id} />}
       </div>
     </div>
   );

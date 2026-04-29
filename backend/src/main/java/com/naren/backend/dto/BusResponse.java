@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record BusResponse(
+    String id,
     String operator,
     String from,
     String to,

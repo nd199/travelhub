@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// API base URL - updated to use port 8080 for Spring Boot backend
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 // Create axios instance
 const api = axios.create({
@@ -29,7 +29,7 @@ export const getPopularTrains = createAsyncThunk(
   'train/getPopularTrains',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/trains/popular');
+      const response = await api.get('/vehicles?type=TRAIN&limit=10');
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -43,7 +43,7 @@ export const getTrainDeals = createAsyncThunk(
   'train/getTrainDeals',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/trains/deals');
+      const response = await api.get('/vehicles?type=TRAIN&deals=true');
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -57,7 +57,7 @@ export const getTrainStations = createAsyncThunk(
   'train/getTrainStations',
   async ({ search = '' }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/stations?search=${search}`);
+      const response = await api.get(`/locations?type=TRAIN_STATION&search=${search}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -71,7 +71,7 @@ export const getTrainRoutes = createAsyncThunk(
   'train/getTrainRoutes',
   async ({ from, to }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/routes?from=${from}&to=${to}`);
+      const response = await api.get(`/routes?from=${from}&to=${to}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -85,7 +85,7 @@ export const getTrainSchedule = createAsyncThunk(
   'train/getTrainSchedule',
   async ({ trainNumber, date }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/${trainNumber}/schedule?date=${date}`);
+      const response = await api.get(`/schedules?vehicleId=${trainNumber}&date=${date}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -99,7 +99,7 @@ export const getTrainLiveStatus = createAsyncThunk(
   'train/getTrainLiveStatus',
   async ({ trainNumber, date }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/${trainNumber}/live-status?date=${date}`);
+      const response = await api.get(`/vehicles/${trainNumber}/live-status?date=${date}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -113,7 +113,7 @@ export const getTrainPriceCalendar = createAsyncThunk(
   'train/getTrainPriceCalendar',
   async ({ from, to, month, classType }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/price-calendar?from=${from}&to=${to}&month=${month}&class=${classType}`);
+      const response = await api.get(`/schedules/price-calendar?from=${from}&to=${to}&month=${month}&class=${classType}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -127,11 +127,11 @@ export const subscribeTrainAlert = createAsyncThunk(
   'train/subscribeTrainAlert',
   async ({ from, to, date, trainNumber, maxPrice }, { rejectWithValue }) => {
     try {
-      const response = await api.post('/trains/alerts', {
+      const response = await api.post('/alerts', {
         from,
         to,
         date,
-        trainNumber,
+        vehicleId: trainNumber,
         maxPrice,
       });
       return response.data;
@@ -147,7 +147,7 @@ export const getTrainReviews = createAsyncThunk(
   'train/getTrainReviews',
   async ({ trainNumber, page = 1 }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/${trainNumber}/reviews?page=${page}`);
+      const response = await api.get(`/vehicles/${trainNumber}/reviews?page=${page}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -161,7 +161,7 @@ export const submitTrainReview = createAsyncThunk(
   'train/submitTrainReview',
   async ({ trainNumber, rating, comment }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/trains/${trainNumber}/reviews`, {
+      const response = await api.post(`/vehicles/${trainNumber}/reviews`, {
         rating,
         comment,
       });
@@ -178,7 +178,7 @@ export const getTrainCoachLayout = createAsyncThunk(
   'train/getTrainCoachLayout',
   async ({ trainNumber, coachType }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/${trainNumber}/coach-layout?coach=${coachType}`);
+      const response = await api.get(`/vehicles/${trainNumber}/coach-layout?coach=${coachType}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -192,7 +192,7 @@ export const getTrainAmenities = createAsyncThunk(
   'train/getTrainAmenities',
   async ({ trainNumber }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/${trainNumber}/amenities`);
+      const response = await api.get(`/vehicles/${trainNumber}/amenities`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -206,7 +206,7 @@ export const getTrainPantryMenu = createAsyncThunk(
   'train/getTrainPantryMenu',
   async ({ trainNumber }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/trains/${trainNumber}/pantry-menu`);
+      const response = await api.get(`/vehicles/${trainNumber}/pantry-menu`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -236,14 +236,7 @@ const initialState = {
   schedules: {},
   liveStatus: {},
   priceCalendar: null,
-  reviews: {
-    [trainNumber]: {
-      reviews: [],
-      pagination: null,
-      isLoading: false,
-      error: null,
-    },
-  },
+  reviews: {},
   coachLayouts: {},
   amenities: {},
   pantryMenus: {},

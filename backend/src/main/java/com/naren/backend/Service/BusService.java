@@ -1,8 +1,9 @@
 package com.naren.backend.service;
 
-import com.naren.backend.dto.BusResponse;
+import com.naren.backend.dto.*;
 import com.naren.backend.entity.Schedule;
 import com.naren.backend.repository.ScheduleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,8 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +20,13 @@ import java.util.stream.Collectors;
 public class BusService {
 
     private final ScheduleRepository scheduleRepository;
+    private final ReviewService reviewService;
+    private final PolicyService policyService;
+    private final BusPhotoService busPhotoService;
+    private final BoardingPointService boardingPointService;
+    private final ObjectMapper objectMapper;
+    
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BusService.class);
 
     public List<BusResponse> getAllBuses() {
         List<Schedule> schedules = scheduleRepository.findAll();
@@ -134,6 +141,7 @@ public class BusService {
         }
 
         return new BusResponse(
+            schedule.getVehicle().getId(),
             operator,
             from,
             to,
@@ -150,5 +158,84 @@ public class BusService {
             reviews,
             peoplesChoice
         );
+    }
+
+    public ExpandedBusResponse getExpandedBusDetails(String scheduleId) {
+        log.info("Fetching expanded bus details for schedule: {}", scheduleId);
+        
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Schedule not found: " + scheduleId));
+        
+        String vehicleId = schedule.getVehicle().getId();
+        
+        // Get basic bus response data
+        BusResponse basicResponse = convertToBusResponse(schedule);
+        
+        // Get expanded details
+        Map<String, Boolean> amenities = parseAmenities(schedule.getVehicle().getAmenities());
+        List<BusPhotoResponse> photos = busPhotoService.getPhotosByVehicle(vehicleId);
+        List<BoardingPointResponse> boardingPoints = boardingPointService.getBoardingPoints();
+        List<BoardingPointResponse> droppingPoints = boardingPointService.getDroppingPoints();
+        List<ReviewResponse> recentReviews = reviewService.getReviewsByVehicle(vehicleId)
+                .stream()
+                .limit(4)
+                .collect(Collectors.toList());
+        ReviewsSummaryResponse reviewsSummary = reviewService.getReviewsSummary(vehicleId);
+        List<PolicyResponse> policies = policyService.getPoliciesByVehicle(vehicleId);
+        
+        return new ExpandedBusResponse(
+                schedule.getId(),
+                basicResponse.operator(),
+                basicResponse.from(),
+                basicResponse.to(),
+                basicResponse.date(),
+                basicResponse.departure(),
+                basicResponse.arrival(),
+                basicResponse.duration(),
+                basicResponse.price(),
+                basicResponse.type(),
+                basicResponse.seats(),
+                basicResponse.totalSeats(),
+                basicResponse.busKind(),
+                basicResponse.rating(),
+                basicResponse.reviews(),
+                basicResponse.peoplesChoice(),
+                amenities,
+                photos,
+                boardingPoints,
+                droppingPoints,
+                recentReviews,
+                reviewsSummary,
+                policies
+        );
+    }
+
+    private Map<String, Boolean> parseAmenities(String amenitiesJson) {
+        Map<String, Boolean> amenities = new HashMap<>();
+        if (amenitiesJson != null && !amenitiesJson.isEmpty()) {
+            try {
+                // Parse JSON string to Map
+                Map<String, Object> parsed = objectMapper.readValue(amenitiesJson, Map.class);
+                for (Map.Entry<String, Object> entry : parsed.entrySet()) {
+                    if (entry.getValue() instanceof Boolean) {
+                        amenities.put(entry.getKey(), (Boolean) entry.getValue());
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error parsing amenities JSON: {}", e.getMessage());
+                // Fallback to default amenities
+                amenities.put("AC", true);
+                amenities.put("WiFi", true);
+                amenities.put("Charging Point", true);
+                amenities.put("Water Bottle", true);
+            }
+        } else {
+            // Default amenities if none provided
+            amenities.put("AC", true);
+            amenities.put("WiFi", true);
+            amenities.put("Charging Point", true);
+            amenities.put("Water Bottle", true);
+        }
+        return amenities;
     }
 }

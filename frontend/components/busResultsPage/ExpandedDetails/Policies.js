@@ -1,6 +1,8 @@
 import React from 'react';
 import { IoTime, IoCloseCircle, IoRefresh } from 'react-icons/io5';
-import { policies as policyData } from '../../../lib/data/policies';
+import { useSelector } from 'react-redux';
+// Removed hardcoded data import - using backend API via Redux store
+// import { policies as policyData } from '../../../lib/data/policies';
 
 const iconMap = {
   XCircle: IoCloseCircle,
@@ -8,13 +10,21 @@ const iconMap = {
   Clock: IoTime,
 };
 
-const Policies = () => {
+const Policies = ({ vehicleId }) => {
+  const { policies, isLoading } = useSelector(state => state.booking);
+
   return (
     <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Policies</h2>
 
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      ) : (
+
       <div className="space-y-5">
-        {policyData.map((policy) => {
+        {(policies || []).map((policy) => {
           const IconComponent = iconMap[policy.icon];
           return (
             <div
@@ -42,6 +52,7 @@ const Policies = () => {
           );
         })}
       </div>
+      )}
     </div>
   );
 };

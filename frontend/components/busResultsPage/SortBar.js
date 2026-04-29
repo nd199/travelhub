@@ -37,10 +37,10 @@ export default function SortBar({ buses, setFiltered }) {
   ];
 
   return (
-    <div className="flex items-center justify-between p-4 mb-4 bg-white border border-orange-200 rounded-xl shadow-sm">
+    <div className="flex items-center justify-between p-4 mb-4 bg-gradient-to-r from-primary via-primary-light to-tertiary border border-tertiary-light shadow-sm rounded-xl">
       <div className="flex items-center gap-2">
-        <FaSortAmountDown className="text-orange-500" />
-        <span className="text-sm font-medium text-orange-700">Sort By:</span>
+        <FaSortAmountDown className="text-accent" />
+        <span className="text-sm font-medium text-white">Sort By:</span>
       </div>
 
       <div className="flex items-center gap-1">
@@ -50,8 +50,8 @@ export default function SortBar({ buses, setFiltered }) {
             onClick={() => handleSort(option.id)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors ${
               sortBy === option.id
-                ? 'bg-orange-500 text-white font-medium'
-                : 'text-gray-600 hover:bg-orange-50'
+                ? 'bg-accent text-primary font-medium'
+                : 'text-white hover:bg-white/20'
             }`}
           >
             {option.label}

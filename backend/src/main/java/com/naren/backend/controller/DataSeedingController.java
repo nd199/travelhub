@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class DataSeedingController {
 
     private final DataSeedingService dataSeedingService;
+    
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSeedingController.class);
 
     @PostMapping("/all")
     @Operation(summary = "Seed all sample data", description = "Populates the database with sample data for locations, vehicles, routes, schedules, and seats")

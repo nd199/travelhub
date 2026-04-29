@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/routes/**").permitAll()
                         .requestMatchers("/api/vehicles/**").permitAll()
                         .requestMatchers("/api/schedules/**").permitAll()
+                        .requestMatchers("/api/buses/**").permitAll()
+                        .requestMatchers("/api/seed/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         // Protected endpoints

@@ -51,4 +51,23 @@ public class Seat {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    // Manual getters to bypass Lombok issues
+    public String getId() { return id; }
+    public Vehicle getVehicle() { return vehicle; }
+    public String getSeatNumber() { return seatNumber; }
+    public String getType() { return type; }
+    public SeatStatus getStatus() { return status; }
+    public Double getPrice() { return price; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    
+    public void setId(String id) { this.id = id; }
+    public void setVehicle(Vehicle vehicle) { this.vehicle = vehicle; }
+    public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
+    public void setType(String type) { this.type = type; }
+    public void setStatus(SeatStatus status) { this.status = status; }
+    public void setPrice(Double price) { this.price = price; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

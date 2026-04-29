@@ -1,7 +1,9 @@
 package com.naren.backend.controller;
 
+import com.naren.backend.dto.SeatResponse;
 import com.naren.backend.dto.VehicleResponse;
 import com.naren.backend.dto.VehicleRequest;
+import com.naren.backend.service.SeatService;
 import com.naren.backend.service.VehicleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,9 +19,11 @@ import java.util.List;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+    private final SeatService seatService;
 
-    public VehicleController(VehicleService vehicleService) {
+    public VehicleController(VehicleService vehicleService, SeatService seatService) {
         this.vehicleService = vehicleService;
+        this.seatService = seatService;
     }
 
     @PostMapping
@@ -56,5 +60,15 @@ public class VehicleController {
     public ResponseEntity<Void> deleteVehicle(@PathVariable String id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{vehicleId}/seats")
+    public ResponseEntity<List<SeatResponse>> getVehicleSeats(@PathVariable String vehicleId) {
+        return ResponseEntity.ok(seatService.getSeatsByVehicleId(vehicleId));
+    }
+
+    @GetMapping("/{vehicleId}/seats/available")
+    public ResponseEntity<List<SeatResponse>> getAvailableSeats(@PathVariable String vehicleId) {
+        return ResponseEntity.ok(seatService.getAvailableSeatsByVehicleId(vehicleId));
     }
 }

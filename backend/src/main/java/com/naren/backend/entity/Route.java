@@ -59,4 +59,25 @@ public class Route {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    // Manual getters to bypass Lombok issues
+    public String getId() { return id; }
+    public Location getSource() { return source; }
+    public Location getDestination() { return destination; }
+    public Double getDistanceKm() { return distanceKm; }
+    public Integer getEstimatedDurationMinutes() { return estimatedDurationMinutes; }
+    public String getDescription() { return description; }
+    public RouteStatus getStatus() { return status; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    
+    public void setId(String id) { this.id = id; }
+    public void setSource(Location source) { this.source = source; }
+    public void setDestination(Location destination) { this.destination = destination; }
+    public void setDistanceKm(Double distanceKm) { this.distanceKm = distanceKm; }
+    public void setEstimatedDurationMinutes(Integer estimatedDurationMinutes) { this.estimatedDurationMinutes = estimatedDurationMinutes; }
+    public void setDescription(String description) { this.description = description; }
+    public void setStatus(RouteStatus status) { this.status = status; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

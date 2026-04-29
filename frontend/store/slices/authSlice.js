@@ -1,26 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// API base URL - updated to use port 8080 for Spring Boot backend
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 // LocalStorage helper for SSR compatibility
 const getLocalStorageItem = (key) => {
   if (typeof window !== 'undefined') {
-    return getLocalStorageItem(key);
+    return localStorage.getItem(key);
   }
   return null;
 };
 
 const setLocalStorageItem = (key, value) => {
   if (typeof window !== 'undefined') {
-    setLocalStorageItem(key, value);
+    localStorage.setItem(key, value);
   }
 };
 
 const removeLocalStorageItem = (key) => {
   if (typeof window !== 'undefined') {
-    removeLocalStorageItem(key);
+    localStorage.removeItem(key);
   }
 };
 

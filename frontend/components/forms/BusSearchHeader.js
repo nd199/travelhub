@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { FaExchangeAlt, FaCalendarAlt, FaSearch } from 'react-icons/fa';
-import { cities } from '../../lib/data/lib';
+import { fetchCities } from '../../store/slices/citySlice';
 
 export function BusSearchHeader({ initialData, onSearch }) {
+  const dispatch = useDispatch();
+  const { cities, loading: citiesLoading } = useSelector((state) => state.city);
+  
   const [searchData, setSearchData] = useState(
     initialData || {
       from: '',
@@ -10,6 +14,13 @@ export function BusSearchHeader({ initialData, onSearch }) {
       departure: '',
     }
   );
+
+  // Fetch cities on component mount
+  useEffect(() => {
+    if (cities.length === 0) {
+      dispatch(fetchCities());
+    }
+  }, [dispatch, cities.length]);
 
   const [fromSuggestions, setFromSuggestions] = useState([]);
   const [toSuggestions, setToSuggestions] = useState([]);

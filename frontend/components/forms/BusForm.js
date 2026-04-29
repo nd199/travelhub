@@ -1,9 +1,11 @@
 import { forwardRef, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { motion } from 'framer-motion';
-import { cities, mockBusResults } from '../../lib/data/lib';
+import { fetchCities } from '../../store/slices/citySlice';
+import { searchBuses } from '../../store/slices/busSlice';
 
 const getToday = () => {
   const today = new Date();
@@ -37,20 +39,25 @@ const busValidationSchema = Yup.object({
     ),
   date: Yup.string()
     .required('Date is required')
-    .test(
-      'not-past',
-      'Date cannot be in the past',
-      function (value) {
-        const today = new Date().toISOString().split('T')[0];
-        return value >= today;
-      }
-    ),
+    .test('not-past', 'Date cannot be in the past', function (value) {
+      const today = new Date().toISOString().split('T')[0];
+      return value >= today;
+    }),
 });
 
 export function BusForm({ onTabChange, activeTab: externalTab }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { cities, loading: citiesLoading } = useSelector((state) => state.city);
   const [internalTab, setInternalTab] = useState('bus');
   const activeTab = externalTab !== undefined ? externalTab : internalTab;
+
+  // Fetch cities on component mount
+  useEffect(() => {
+    if (cities.length === 0) {
+      dispatch(fetchCities());
+    }
+  }, [dispatch, cities.length]);
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [fromSuggestions, setFromSuggestions] = useState([]);
@@ -190,9 +197,9 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
       </h2>
 
       {searchResults.length === 0 ? (
-        <form className="space-y-4" onSubmit={formik.handleSubmit}>
-          <div className="relative">
-            <AutocompleteInput
+        <form className="space-y-9" onSubmit={formik.handleSubmit}>
+          <div className="relative space-y-6">
+            <Input
               ref={fromRef}
               label="From"
               name="fromCity"
@@ -205,7 +212,7 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
               error={formik.errors.fromCity}
               touched={formik.touched.fromCity}
             />
-            <AutocompleteInput
+            <Input
               ref={toRef}
               label="To"
               name="toCity"
@@ -239,14 +246,14 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
               <button
                 type="button"
                 onClick={() => formik.setFieldValue('date', getToday())}
-                className="px-3 py-2 text-sm font-medium transition-all border text-white/70 bg-white/5 border-white/15 rounded-xl hover:bg-white/10 hover:text-white"
+                className="px-3 py-2 text-sm font-medium transition-all border text-white/70 bg-tertiary/10 border-tertiary-lighter/30 rounded-xl hover:bg-tertiary/20 hover:text-white"
               >
                 Today
               </button>
               <button
                 type="button"
                 onClick={() => formik.setFieldValue('date', getTomorrow())}
-                className="px-3 py-2 text-sm font-medium transition-all border text-white/70 bg-white/5 border-white/15 rounded-xl hover:bg-white/10 hover:text-white"
+                className="px-3 py-2 text-sm font-medium transition-all border text-white/70 bg-tertiary/10 border-tertiary-lighter/30 rounded-xl hover:bg-tertiary/20 hover:text-white"
               >
                 Tomorrow
               </button>
@@ -258,7 +265,7 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
           <button
             type="submit"
             disabled={isSearching}
-            className="w-full py-3 font-semibold text-black transition-all border-0 shadow-lg bg-white/60 rounded-xl hover:bg-white/70 disabled:opacity-50"
+            className="w-full py-3 font-semibold text-white transition-all border-0 shadow-lg bg-gradient-to-r from-secondary to-secondary-dark rounded-xl hover:from-secondary-dark hover:to-secondary disabled:opacity-50"
           >
             {isSearching ? 'Searching...' : 'Search Bus'}
           </button>
@@ -281,8 +288,8 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
               onClick={() => setShowWomenSeatsOnly(!showWomenSeatsOnly)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                 showWomenSeatsOnly
-                  ? 'bg-pink-500/80 text-white border-pink-400'
-                  : 'bg-white/5 text-white/70 border-white/15 hover:bg-white/10'
+                  ? 'bg-accent text-white border-accent-dark'
+                  : 'bg-tertiary/10 text-white/70 border-tertiary-lighter/30 hover:bg-tertiary/20'
               }`}
             >
               Show Women Seats Only
@@ -342,7 +349,7 @@ export function BusForm({ onTabChange, activeTab: externalTab }) {
   );
 }
 
-const AutocompleteInput = forwardRef(function AutocompleteInput(
+const Input = forwardRef(function Input(
   {
     label,
     name,
@@ -359,7 +366,7 @@ const AutocompleteInput = forwardRef(function AutocompleteInput(
   ref
 ) {
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative space-y-2" ref={ref}>
       <label className="block mb-1 text-sm text-white/80">{label}</label>
 
       <input
@@ -396,4 +403,4 @@ const AutocompleteInput = forwardRef(function AutocompleteInput(
   );
 });
 
-export default AutocompleteInput;
+export default Input;

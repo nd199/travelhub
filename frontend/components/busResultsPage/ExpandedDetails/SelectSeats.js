@@ -5,10 +5,15 @@ import { useRouter } from 'next/router';
 import { initialSeats } from '../../../lib/data/seats';
 import { boardingPoints, droppingPoints } from '../../../lib/data/boarding';
 import toast from 'react-hot-toast';
-import Bus3D from '../../3dComponents/Bus3D';
+import Bus3D from '../../3DModels/Bus3D';
 import Tooltip from './Tooltip';
 
-const SeatSelection = ({ bus, onSeatSelect, onBoardingSelect, onDroppingSelect }) => {
+const SeatSelection = ({
+  bus,
+  onSeatSelect,
+  onBoardingSelect,
+  onDroppingSelect,
+}) => {
   const router = useRouter();
   const [seatLayout, setSeatLayout] = useState(initialSeats);
   const [activeSelections, setActiveSelections] = useState([]);
@@ -61,11 +66,11 @@ const SeatSelection = ({ bus, onSeatSelect, onBoardingSelect, onDroppingSelect }
         ? prev?.filter((id) => id !== seatId)
         : [...prev, seatId]
     );
-    
+
     const newSelections = activeSelections?.includes(seatId)
       ? activeSelections?.filter((id) => id !== seatId)
       : [...(activeSelections || []), seatId];
-    
+
     if (onSeatSelect) onSeatSelect(newSelections);
   };
 
@@ -231,7 +236,7 @@ const SeatSelection = ({ bus, onSeatSelect, onBoardingSelect, onDroppingSelect }
         </div>
       </div>
       <div className="flex-[1]">
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center w-full gap-10">
           <h1 className="flex mb-2 text-lg font-semibold text-gray-900">
             Select Seats
           </h1>
@@ -282,33 +287,26 @@ const SeatSelection = ({ bus, onSeatSelect, onBoardingSelect, onDroppingSelect }
             />
           </div>
         ) : (
-          <div className="flex items-center justify-center w-full mt-6">
-            <div className="w-[40px] h-[210px] bg-blue-200 rounded-l-md relative border-2 border-r-0 border-gray-500">
+          <div className="flex items-start justify-center w-full mt-6">
+            <div className="w-[40px] min-h-[210px] bg-blue-200 rounded-l-md relative border-2 border-r-0 border-gray-500">
               <GiSteeringWheel className="absolute w-4 h-4 top-3 left-1" />
             </div>
 
-            <div className="w-[400px] h-[210px] bg-gray-200 rounded-r-md border-2 border-l-0 border-gray-500 p-4">
-              <div className="flex flex-col items-end gap-5">
-                {seatLayout?.map((row, rowIndex) => (
-                  <div key={rowIndex} className="flex gap-5">
+            <div className="w-[420px] min-h-[210px] bg-gray-200 rounded-r-md border-2 border-l-0 border-gray-500 p-4 overflow-hidden">
+              <div className="flex flex-col gap-3">
+                {seatLayout.map((row, rowIndex) => (
+                  <div key={rowIndex} className="flex items-center gap-3">
                     {row.map((seat, colIndex) => {
-                      const seatId = `${rowIndex}-${colIndex}`;
-                      const isSelected = activeSelections.includes(seatId);
-
+                      const key = `${rowIndex}-${colIndex}`;
                       return (
                         <Seat
-                          key={seatId}
+                          key={key}
                           seat={seat}
-                          isSelected={isSelected}
-                          onClick={() =>
-                            handleSeatSelection(rowIndex, colIndex)
-                          }
+                          isSelected={activeSelections.includes(key)}
+                          onClick={() => handleSeatSelection(rowIndex, colIndex)}
                           onHover={(e) => {
                             setHoveredSeat(seat);
-                            setCursorPosition({
-                              x: e.clientX,
-                              y: e.clientY,
-                            });
+                            setCursorPosition({ x: e.clientX, y: e.clientY });
                           }}
                           onLeave={() => setHoveredSeat(null)}
                         />
@@ -429,7 +427,6 @@ const SeatSelection = ({ bus, onSeatSelect, onBoardingSelect, onDroppingSelect }
 const Seat = ({ seat, isSelected, onClick, onHover, onLeave }) => {
   const resolveSeatColor = () => {
     if (seat?.type === 'booked') return 'bg-gray-400';
-    if (isSelected) return 'bg-green-500';
     if (seat?.gender === 'ladies') return 'bg-pink-300';
     return 'bg-white';
   };
@@ -439,7 +436,7 @@ const Seat = ({ seat, isSelected, onClick, onHover, onLeave }) => {
       onMouseEnter={onHover}
       onMouseMove={onHover}
       onMouseLeave={onLeave}
-      onClick={onClick}
+      onClick={seat.type !== 'booked' ? onClick : undefined}
       className={`relative flex items-center justify-center w-7 ${
         seat.type === 'booked'
           ? 'cursor-not-allowed opacity-70'
@@ -447,12 +444,20 @@ const Seat = ({ seat, isSelected, onClick, onHover, onLeave }) => {
       }`}
     >
       <div
-        className={`w-7 h-5 rounded border border-gray-700 ${resolveSeatColor()}`}
+        className={`w-8 h-6 rounded border border-gray-700 ${
+          isSelected ? 'bg-green-500' : resolveSeatColor()
+        }`}
       />
 
       <div
         className={`absolute w-5 h-7 border-[3px] border-l-0 -right-1 ${
-          isSelected ? 'border-green-500' : 'border-gray-400'
+          isSelected
+            ? 'border-green-500'
+            : seat?.gender === 'ladies'
+              ? 'border-pink-500'
+              : seat?.gender === 'male'
+                ? 'border-blue-500'
+                : 'border-gray-400'
         }`}
       />
     </div>

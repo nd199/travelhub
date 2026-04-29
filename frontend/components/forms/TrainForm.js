@@ -3,12 +3,8 @@ import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { motion } from 'framer-motion';
-import {
-  cities,
-  cityCodes,
-  mockTrainResults,
-  mockPnrResult,
-} from '../../lib/data/lib';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCities } from '../../store/slices/citySlice';
 
 const trainValidationSchema = Yup.object({
   fromCity: Yup.string()
@@ -22,8 +18,17 @@ const trainValidationSchema = Yup.object({
 
 export function TrainForm({ onTabChange, activeTab: externalTab }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { cities, loading: citiesLoading } = useSelector((state) => state.city);
   const [internalTab, setInternalTab] = useState('train');
   const activeTab = externalTab !== undefined ? externalTab : internalTab;
+
+  // Fetch cities on component mount
+  useEffect(() => {
+    if (cities.length === 0) {
+      dispatch(fetchCities());
+    }
+  }, [dispatch, cities.length]);
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [fromSuggestions, setFromSuggestions] = useState([]);
@@ -86,11 +91,7 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
     formik.setFieldValue('fromCity', value);
     if (value.length > 0) {
       const filtered = cities
-        .filter(
-          (city) =>
-            city.toLowerCase().includes(value.toLowerCase()) ||
-            cityCodes[city].toLowerCase().includes(value.toLowerCase())
-        )
+        .filter((city) => city.toLowerCase().includes(value.toLowerCase()))
         .filter((city) => city !== formik.values.toCity);
       setFromSuggestions(filtered.slice(0, 5));
       setShowFromDropdown(filtered.length > 0);
@@ -105,11 +106,7 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
     formik.setFieldValue('toCity', value);
     if (value.length > 0) {
       const filtered = cities
-        .filter(
-          (city) =>
-            city.toLowerCase().includes(value.toLowerCase()) ||
-            cityCodes[city].toLowerCase().includes(value.toLowerCase())
-        )
+        .filter((city) => city.toLowerCase().includes(value.toLowerCase()))
         .filter((city) => city !== formik.values.fromCity);
       setToSuggestions(filtered.slice(0, 5));
       setShowToDropdown(filtered.length > 0);
@@ -163,7 +160,7 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
         currentStation: 'Bangalore City',
         delay: 5,
         lastUpdated: new Date().toLocaleTimeString(),
-        nextStation: 'Krishnarajapuram'
+        nextStation: 'Krishnarajapuram',
       });
       setCheckingLive(false);
     }, 1500);
@@ -221,7 +218,8 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
               if (tab === 'Live Status') setPnrMode('live');
             }}
             className={`flex-1 py-2 rounded-lg capitalize font-medium transition-all relative z-10 text-sm ${
-              (!pnrMode && tab === 'Book Ticket') || (pnrMode === tab.toLowerCase().replace(' ', ''))
+              (!pnrMode && tab === 'Book Ticket') ||
+              pnrMode === tab.toLowerCase().replace(' ', '')
                 ? 'bg-white/70 text-black shadow-lg'
                 : 'text-white/70 hover:text-white'
             }`}
@@ -294,20 +292,24 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
       ) : pnrMode === 'live' ? (
         <div className="max-w-md mx-auto space-y-4">
           <div className="p-6 border bg-white/10 border-white/15 rounded-2xl">
-            <label className="block mb-2 text-sm text-white/80">Enter Train Number</label>
+            <label className="block mb-2 text-sm text-white/80">
+              Enter Train Number
+            </label>
             <input
               type="text"
               placeholder="5 digit train number"
               value={trainNumber}
-              onChange={(e) => setTrainNumber(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) =>
+                setTrainNumber(e.target.value.replace(/\D/g, ''))
+              }
               maxLength={5}
-              className="w-full px-4 py-3 text-lg font-mono text-white text-center border outline-none bg-white/5 rounded-xl focus:ring-2 focus:ring-white/25 placeholder-white/30 border-white/15 focus:border-white/25"
+              className="w-full px-4 py-3 font-mono text-lg text-center text-white border outline-none bg-white/5 rounded-xl focus:ring-2 focus:ring-white/25 placeholder-white/30 border-white/15 focus:border-white/25"
             />
             <button
               type="button"
               disabled={trainNumber.length !== 5}
               onClick={checkLiveStatus}
-              className="w-full mt-4 py-3 font-semibold text-black transition-all border-0 shadow-lg bg-white/60 rounded-xl hover:bg-white/70 disabled:opacity-50"
+              className="w-full py-3 mt-4 font-semibold text-black transition-all border-0 shadow-lg bg-white/60 rounded-xl hover:bg-white/70 disabled:opacity-50"
             >
               {checkingLive ? 'Fetching Status...' : 'Check Live Status'}
             </button>
@@ -315,13 +317,36 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
 
           {liveStatusResult && (
             <div className="p-6 border bg-white/10 border-white/15 rounded-2xl">
-              <h3 className="text-lg font-semibold text-white mb-3">Live Train Status</h3>
+              <h3 className="mb-3 text-lg font-semibold text-white">
+                Live Train Status
+              </h3>
               <div className="space-y-2 text-sm">
-                <p className="text-white/80"><span className="text-white/50">Train:</span> {liveStatusResult.trainName} ({liveStatusResult.trainNumber})</p>
-                <p className="text-white/80"><span className="text-white/50">Current Station:</span> {liveStatusResult.currentStation}</p>
-                <p className="text-white/80"><span className="text-white/50">Status:</span> <span className={`font-semibold ${liveStatusResult.delay <= 0 ? 'text-green-400' : 'text-yellow-400'}`}>{liveStatusResult.delay <= 0 ? 'On Time' : `${liveStatusResult.delay} min late`}</span></p>
-                <p className="text-white/80"><span className="text-white/50">Last Updated:</span> {liveStatusResult.lastUpdated}</p>
-                <p className="text-white/80"><span className="text-white/50">Next Station:</span> {liveStatusResult.nextStation}</p>
+                <p className="text-white/80">
+                  <span className="text-white/50">Train:</span>{' '}
+                  {liveStatusResult.trainName} ({liveStatusResult.trainNumber})
+                </p>
+                <p className="text-white/80">
+                  <span className="text-white/50">Current Station:</span>{' '}
+                  {liveStatusResult.currentStation}
+                </p>
+                <p className="text-white/80">
+                  <span className="text-white/50">Status:</span>{' '}
+                  <span
+                    className={`font-semibold ${liveStatusResult.delay <= 0 ? 'text-green-400' : 'text-yellow-400'}`}
+                  >
+                    {liveStatusResult.delay <= 0
+                      ? 'On Time'
+                      : `${liveStatusResult.delay} min late`}
+                  </span>
+                </p>
+                <p className="text-white/80">
+                  <span className="text-white/50">Last Updated:</span>{' '}
+                  {liveStatusResult.lastUpdated}
+                </p>
+                <p className="text-white/80">
+                  <span className="text-white/50">Next Station:</span>{' '}
+                  {liveStatusResult.nextStation}
+                </p>
               </div>
             </div>
           )}
@@ -357,11 +382,6 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
                     {formik.errors.fromCity}
                   </p>
                 )}
-                {formik.values.fromCity && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-white/60 bg-white/10 px-2 py-0.5 rounded">
-                    {cityCodes[formik.values.fromCity]}
-                  </span>
-                )}
                 {showFromDropdown && fromSuggestions.length > 0 && (
                   <ul className="absolute z-30 w-full mt-1 overflow-auto border rounded-lg shadow-xl max-h-48 bg-black/95 backdrop-blur-lg border-white/20">
                     {fromSuggestions.map((city) => (
@@ -371,9 +391,6 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
                         className="flex justify-between items-center px-4 py-2.5 text-sm cursor-pointer hover:bg-white/10 text-white/80 hover:text-white transition-colors border-b border-white/5 last:border-0"
                       >
                         <span className="font-medium">{city}</span>
-                        <span className="font-mono text-xs text-white/40">
-                          {cityCodes[city]}
-                        </span>
                       </li>
                     ))}
                   </ul>
@@ -424,11 +441,6 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
                     {formik.errors.toCity}
                   </p>
                 )}
-                {formik.values.toCity && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-white/60 bg-white/10 px-2 py-0.5 rounded">
-                    {cityCodes[formik.values.toCity]}
-                  </span>
-                )}
                 {showToDropdown && toSuggestions.length > 0 && (
                   <ul className="absolute z-30 w-full mt-1 overflow-auto border rounded-lg shadow-xl max-h-48 bg-black/95 backdrop-blur-lg border-white/20">
                     {toSuggestions.map((city) => (
@@ -438,9 +450,6 @@ export function TrainForm({ onTabChange, activeTab: externalTab }) {
                         className="flex justify-between items-center px-4 py-2.5 text-sm cursor-pointer hover:bg-white/10 text-white/80 hover:text-white transition-colors border-b border-white/5 last:border-0"
                       >
                         <span className="font-medium">{city}</span>
-                        <span className="font-mono text-xs text-white/40">
-                          {cityCodes[city]}
-                        </span>
                       </li>
                     ))}
                   </ul>

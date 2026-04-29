@@ -1,43 +1,58 @@
 export const initialSeats = [
+  // Row 1
   [
-    { type: 'available', gender: 'ladies', price: 409, number: 1, name: '1A' },
-    { type: 'booked', gender: 'men', price: 409, number: 2, name: '1B' },
-    { type: 'available', gender: 'none', price: 409, number: 3, name: '1C' },
-    { type: 'available', gender: 'men', price: 409, number: 4, name: '1D' },
-    { type: 'available', gender: 'ladies', price: 409, number: 5, name: '1E' },
-    { type: 'available', gender: 'none', price: 409, number: 6, name: '1F' },
-    { type: 'booked', gender: 'none', price: 409, number: 7, name: '1G' },
-    { type: 'available', gender: 'men', price: 409, number: 8, name: '1H' },
+    { type: 'available', gender: 'none', price: 500, number: '1A', name: '1A' },
+    { type: 'available', gender: 'none', price: 500, number: '1B', name: '1B' },
+    { type: 'available', gender: 'none', price: 500, number: '1C', name: '1C' },
+    { type: 'available', gender: 'none', price: 500, number: '1D', name: '1D' },
   ],
+  // Row 2
   [
-    { type: 'available', gender: 'none', price: 409, number: 9, name: '2A' },
-    { type: 'available', gender: 'ladies', price: 409, number: 10, name: '2B' },
-    { type: 'booked', gender: 'none', price: 409, number: 11, name: '2C' },
-    { type: 'available', gender: 'men', price: 409, number: 12, name: '2D' },
-    { type: 'available', gender: 'none', price: 409, number: 13, name: '2E' },
-    { type: 'available', gender: 'ladies', price: 409, number: 14, name: '2F' },
-    { type: 'available', gender: 'men', price: 409, number: 15, name: '2G' },
-    { type: 'booked', gender: 'none', price: 409, number: 16, name: '2H' },
+    { type: 'available', gender: 'none', price: 500, number: '2A', name: '2A' },
+    { type: 'available', gender: 'none', price: 500, number: '2B', name: '2B' },
+    { type: 'available', gender: 'none', price: 500, number: '2C', name: '2C' },
+    { type: 'available', gender: 'none', price: 500, number: '2D', name: '2D' },
   ],
-  [{ type: 'booked', gender: 'none', price: 409, number: 17, name: '3A' }],
+  // Row 3
   [
-    { type: 'available', gender: 'ladies', price: 409, number: 18, name: '4A' },
-    { type: 'booked', gender: 'men', price: 409, number: 19, name: '4B' },
-    { type: 'available', gender: 'none', price: 409, number: 20, name: '4C' },
-    { type: 'available', gender: 'men', price: 409, number: 21, name: '4D' },
-    { type: 'available', gender: 'ladies', price: 409, number: 22, name: '4E' },
-    { type: 'available', gender: 'none', price: 409, number: 23, name: '4F' },
-    { type: 'booked', gender: 'none', price: 409, number: 24, name: '4G' },
-    { type: 'available', gender: 'men', price: 409, number: 25, name: '4H' },
+    { type: 'ladies', gender: 'female', price: 500, number: '3A', name: '3A' },
+    { type: 'ladies', gender: 'female', price: 500, number: '3B', name: '3B' },
+    { type: 'available', gender: 'none', price: 500, number: '3C', name: '3C' },
+    { type: 'available', gender: 'none', price: 500, number: '3D', name: '3D' },
   ],
+  // Row 4
   [
-    { type: 'available', gender: 'none', price: 409, number: 26, name: '5A' },
-    { type: 'available', gender: 'ladies', price: 409, number: 27, name: '5B' },
-    { type: 'booked', gender: 'none', price: 409, number: 28, name: '5C' },
-    { type: 'available', gender: 'men', price: 409, number: 29, name: '5D' },
-    { type: 'available', gender: 'none', price: 409, number: 30, name: '5E' },
-    { type: 'available', gender: 'ladies', price: 409, number: 31, name: '5F' },
-    { type: 'available', gender: 'men', price: 409, number: 32, name: '5G' },
-    { type: 'booked', gender: 'none', price: 409, number: 33, name: '5H' },
+    { type: 'available', gender: 'none', price: 500, number: '4A', name: '4A' },
+    { type: 'booked', gender: 'none', price: 500, number: '4B', name: '4B' },
+    { type: 'available', gender: 'none', price: 500, number: '4C', name: '4C' },
+    { type: 'available', gender: 'none', price: 500, number: '4D', name: '4D' },
+  ],
+  // Row 5
+  [
+    { type: 'available', gender: 'none', price: 500, number: '5A', name: '5A' },
+    { type: 'available', gender: 'none', price: 500, number: '5B', name: '5B' },
+    { type: 'ladies', gender: 'female', price: 500, number: '5C', name: '5C' },
+    { type: 'available', gender: 'none', price: 500, number: '5D', name: '5D' },
+  ],
+  // Row 6
+  [
+    { type: 'available', gender: 'none', price: 500, number: '6A', name: '6A' },
+    { type: 'available', gender: 'none', price: 500, number: '6B', name: '6B' },
+    { type: 'available', gender: 'none', price: 500, number: '6C', name: '6C' },
+    { type: 'booked', gender: 'none', price: 500, number: '6D', name: '6D' },
+  ],
+  // Row 7
+  [
+    { type: 'available', gender: 'none', price: 500, number: '7A', name: '7A' },
+    { type: 'ladies', gender: 'female', price: 500, number: '7B', name: '7B' },
+    { type: 'available', gender: 'none', price: 500, number: '7C', name: '7C' },
+    { type: 'available', gender: 'none', price: 500, number: '7D', name: '7D' },
+  ],
+  // Row 8
+  [
+    { type: 'available', gender: 'none', price: 500, number: '8A', name: '8A' },
+    { type: 'available', gender: 'none', price: 500, number: '8B', name: '8B' },
+    { type: 'available', gender: 'none', price: 500, number: '8C', name: '8C' },
+    { type: 'booked', gender: 'none', price: 500, number: '8D', name: '8D' },
   ],
 ];
