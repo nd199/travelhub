@@ -36,41 +36,59 @@ public class DataSeedingService {
     public void seedAllData() {
         log.info("Starting data seeding process...");
 
-        // Clear existing data
-        seatRepository.deleteAll();
-        scheduleRepository.deleteAll();
-        routeRepository.deleteAll();
-        vehicleRepository.deleteAll();
-        locationRepository.deleteAll();
+        try {
+            // Clear existing data in correct order to avoid foreign key constraints
+            busPhotoRepository.deleteAll();
+            policyRepository.deleteAll();
+            reviewRepository.deleteAll();
+            boardingPointRepository.deleteAll();
+            seatRepository.deleteAll();
+            scheduleRepository.deleteAll();
+            routeRepository.deleteAll();
+            vehicleRepository.deleteAll();
+            locationRepository.deleteAll();
 
-        // Seed locations
-        List<Location> locations = seedLocations();
+            // Seed locations first
+            List<Location> locations = seedLocations();
+            log.info("✅ Locations seeded: {}", locations.size());
 
-        // Seed vehicles
-        List<Vehicle> vehicles = seedVehicles();
+            // Seed vehicles
+            List<Vehicle> vehicles = seedVehicles();
+            log.info("✅ Vehicles seeded: {}", vehicles.size());
 
-        // Seed routes
-        List<Route> routes = seedRoutes(locations);
+            // Seed routes
+            List<Route> routes = seedRoutes(locations);
+            log.info("✅ Routes seeded: {}", routes.size());
 
-        // Seed schedules
-        List<Schedule> schedules = seedSchedules(vehicles, routes);
+            // Seed schedules
+            List<Schedule> schedules = seedSchedules(vehicles, routes);
+            log.info("✅ Schedules seeded: {}", schedules.size());
 
-        // Seed seats
-        seedSeats(vehicles);
+            // Seed seats
+            seedSeats(vehicles);
+            log.info("✅ Seats seeded");
 
-        // Seed boarding points
-        seedBoardingPoints(locations);
+            // Seed boarding points
+            seedBoardingPoints(locations);
+            log.info("✅ Boarding points seeded");
 
-        // Seed reviews
-        seedReviews(vehicles);
+            // Seed reviews
+            seedReviews(vehicles);
+            log.info("✅ Reviews seeded");
 
-        // Seed policies
-        seedPolicies(vehicles);
+            // Seed policies
+            seedPolicies(vehicles);
+            log.info("✅ Policies seeded");
 
-        // Seed bus photos
-        seedBusPhotos(vehicles);
+            // Seed bus photos
+            seedBusPhotos(vehicles);
+            log.info("✅ Bus photos seeded");
 
-        log.info("Data seeding completed successfully!");
+            log.info("🎉 Data seeding completed successfully!");
+        } catch (Exception e) {
+            log.error("❌ Data seeding failed: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Transactional
@@ -110,7 +128,6 @@ public class DataSeedingService {
 
         for (int i = 0; i < cities.length; i++) {
             Location location = new Location();
-            location.setId("loc" + String.format("%03d", i + 1));
             location.setName(cities[i]);
             location.setCity(cities[i].split(" ")[0]);
             location.setState(states[i]);
@@ -163,7 +180,6 @@ public class DataSeedingService {
 
         for (int i = 0; i < busNames.length; i++) {
             Vehicle vehicle = new Vehicle();
-            vehicle.setId("veh" + String.format("%03d", i + 1));
             vehicle.setName(busNames[i]);
             vehicle.setType(VehicleType.BUS);
             vehicle.setCapacity(faker.number().numberBetween(30, 50));
@@ -198,7 +214,6 @@ public class DataSeedingService {
                 Location destination = locations.get(pair[1]);
                 
                 Route route = new Route();
-                route.setId("route" + String.format("%03d", routes.size() + 1));
                 route.setSource(source);
                 route.setDestination(destination);
                 route.setDistanceKm(faker.number().randomDouble(300, 2000, 2));
@@ -234,7 +249,6 @@ public class DataSeedingService {
                         .plusMinutes(random.nextInt(60));
 
                 Schedule schedule = new Schedule();
-                schedule.setId("sched" + String.format("%03d", i + 1));
                 schedule.setVehicle(vehicle);
                 schedule.setRoute(route);
                 schedule.setDepartureTime(departureTime);
@@ -282,7 +296,6 @@ public class DataSeedingService {
                     }
 
                     Seat seat = new Seat();
-                    seat.setId("seat" + String.format("%03d", seats.size() + 1));
                     seat.setVehicle(vehicle);
                     seat.setSeatNumber(seatNumber);
                     seat.setType(seatType);
@@ -323,26 +336,22 @@ public class DataSeedingService {
         };
 
         // Add boarding points for first few locations
-        for (int i = 0; i < Math.min(boardingData.length, locations.size() / 2); i++) {
-            for (int j = 0; j < boardingData[i].length; j++) {
-                Location location = locations.get(i * 2); // Use even indices for boarding
-                BoardingPoint boardingPoint = new BoardingPoint();
-                boardingPoint.setId("bp" + String.format("%03d", boardingPoints.size() + 1));
-                boardingPoint.setLocation(location);
-                boardingPoint.setPointName(boardingData[i][0]);
-                boardingPoint.setAddress(boardingData[i][1]);
-                boardingPoint.setTime(boardingData[i][2]);
-                boardingPoint.setLandmark(boardingData[i][3]);
-                boardingPoint.setType(BoardingPointType.BOARDING);
-                boardingPoints.add(boardingPoint);
-            }
+        for (int i = 0; i < Math.min(boardingData.length, locations.size()); i++) {
+            Location location = locations.get(i); // Use available locations
+            BoardingPoint boardingPoint = new BoardingPoint();
+            boardingPoint.setLocation(location);
+            boardingPoint.setPointName(boardingData[i][0]);
+            boardingPoint.setAddress(boardingData[i][1]);
+            boardingPoint.setTime(boardingData[i][2]);
+            boardingPoint.setLandmark(boardingData[i][3]);
+            boardingPoint.setType(BoardingPointType.BOARDING);
+            boardingPoints.add(boardingPoint);
         }
 
         // Add dropping points for next few locations
-        for (int i = 0; i < Math.min(droppingData.length, locations.size() / 2); i++) {
-            Location location = locations.get(i * 2 + 1); // Use odd indices for dropping
+        for (int i = 0; i < Math.min(droppingData.length, locations.size()); i++) {
+            Location location = locations.get(i); // Use available locations
             BoardingPoint droppingPoint = new BoardingPoint();
-            droppingPoint.setId("dp" + String.format("%03d", boardingPoints.size() + 1));
             droppingPoint.setLocation(location);
             droppingPoint.setPointName(droppingData[i][0]);
             droppingPoint.setAddress(droppingData[i][1]);
@@ -375,7 +384,6 @@ public class DataSeedingService {
             int reviewCount = faker.number().numberBetween(3, 8);
             for (int i = 0; i < reviewCount; i++) {
                 Review review = new Review();
-                review.setId("rev" + String.format("%03d", reviews.size() + 1));
                 review.setVehicle(vehicle);
                 review.setUserName(userNames[random.nextInt(userNames.length)]);
                 review.setRating(random.nextInt(2) + 4); // Ratings between 4-5
@@ -404,7 +412,6 @@ public class DataSeedingService {
         for (Vehicle vehicle : vehicles) {
             for (String[] policyInfo : policyData) {
                 Policy policy = new Policy();
-                policy.setId("pol" + String.format("%03d", policies.size() + 1));
                 policy.setVehicle(vehicle);
                 policy.setTitle(policyInfo[0]);
                 policy.setDescription(policyInfo[1]);
@@ -439,7 +446,6 @@ public class DataSeedingService {
         for (Vehicle vehicle : vehicles) {
             for (int i = 0; i < Math.min(photoTypes.length, photoUrls.length); i++) {
                 BusPhoto busPhoto = new BusPhoto();
-                busPhoto.setId("photo" + String.format("%03d", busPhotos.size() + 1));
                 busPhoto.setVehicle(vehicle);
                 busPhoto.setPhotoUrl(photoUrls[i]);
                 busPhoto.setCaption(photoTypes[i] + " view of " + vehicle.getName());

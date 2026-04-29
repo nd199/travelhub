@@ -1,5 +1,5 @@
 import { FaMapMarkerAlt } from 'react-icons/fa';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GiSteeringWheel } from 'react-icons/gi';
 import { useRouter } from 'next/router';
 import { initialSeats } from '../../../lib/data/seats';
@@ -23,6 +23,35 @@ const SeatSelection = ({
   const [selectedDropping, setSelectedDropping] = useState('');
   const [error, setError] = useState('');
   const [view3D, setView3D] = useState(true);
+  const [backendSeats, setBackendSeats] = useState([]);
+
+  useEffect(() => {
+    const fetchSeats = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/seats/vehicle/${bus.id}`);
+        const data = await response.json();
+        setBackendSeats(data);
+        // Update seat layout with backend data
+        const updatedLayout = initialSeats.map(row => 
+          row.map(seat => {
+            const backendSeat = data.find(bs => bs.seatNumber === seat.name);
+            return backendSeat ? {
+              ...seat,
+              type: backendSeat.status === 'BOOKED' ? 'booked' : 'available'
+            } : seat;
+          })
+        );
+        setSeatLayout(updatedLayout);
+      } catch (error) {
+        console.error('Error fetching seats:', error);
+        toast.error('Failed to load seat data');
+      }
+    };
+
+    if (bus?.id) {
+      fetchSeats();
+    }
+  }, [bus?.id]);
 
   const currentUser = {
     gender: 'male',
