@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 public class BusPhotoService {
 
     private final BusPhotoRepository busPhotoRepository;
-    
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BusPhotoService.class);
 
     public List<BusPhotoResponse> getPhotosByVehicle(String vehicleId) {
         log.info("Fetching photos for vehicle: {}", vehicleId);

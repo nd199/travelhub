@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ReviewService.class);
 
     public List<ReviewResponse> getReviewsByVehicle(String vehicleId) {
         log.info("Fetching reviews for vehicle: {}", vehicleId);
@@ -30,32 +28,29 @@ public class ReviewService {
 
     public ReviewsSummaryResponse getReviewsSummary(String vehicleId) {
         log.info("Fetching reviews summary for vehicle: {}", vehicleId);
-        
-        Double averageRating = reviewRepository.findAverageRatingByVehicleId(vehicleId);
-        Long totalReviews = reviewRepository.countReviewsByVehicleId(vehicleId);
-        
-        if (averageRating == null) {
-            averageRating = 0.0;
-        }
-        if (totalReviews == null) {
-            totalReviews = 0L;
-        }
 
         List<Review> allReviews = reviewRepository.findByVehicleId(vehicleId);
-        long fiveStar = allReviews.stream().filter(r -> r.getRating() == 5).count();
-        long fourStar = allReviews.stream().filter(r -> r.getRating() == 4).count();
-        long threeStar = allReviews.stream().filter(r -> r.getRating() == 3).count();
-        long twoStar = allReviews.stream().filter(r -> r.getRating() == 2).count();
-        long oneStar = allReviews.stream().filter(r -> r.getRating() == 1).count();
+
+        double totalRating = 0;
+        long[] starCounts = new long[5];
+
+        for (Review review : allReviews) {
+            totalRating += review.getRating();
+            if (review.getRating() >= 1 && review.getRating() <= 5) {
+                starCounts[review.getRating() - 1]++;
+            }
+        }
+
+        double averageRating = allReviews.isEmpty() ? 0.0 : totalRating / allReviews.size();
 
         return new ReviewsSummaryResponse(
                 averageRating,
-                totalReviews,
-                fiveStar,
-                fourStar,
-                threeStar,
-                twoStar,
-                oneStar
+                (long) allReviews.size(),
+                starCounts[4],
+                starCounts[3],
+                starCounts[2],
+                starCounts[1],
+                starCounts[0]
         );
     }
 

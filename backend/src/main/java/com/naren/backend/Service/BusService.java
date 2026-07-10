@@ -25,8 +25,10 @@ public class BusService {
     private final BusPhotoService busPhotoService;
     private final BoardingPointService boardingPointService;
     private final ObjectMapper objectMapper;
-    
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BusService.class);
+
+    private static final Map<String, Boolean> DEFAULT_AMENITIES = Map.of(
+        "AC", true, "WiFi", true, "Charging Point", true, "Water Bottle", true
+    );
 
     public List<BusResponse> getAllBuses() {
         List<Schedule> schedules = scheduleRepository.findAll();
@@ -59,86 +61,15 @@ public class BusService {
         String operator = schedule.getVehicle().getName();
         String from = schedule.getRoute().getSource().getName().split(" ")[0];
         if (from.isEmpty()) from = "Chennai";
-        
+
         String to = schedule.getRoute().getDestination().getName().split(" ")[0];
         if (to.isEmpty()) to = "Bangalore";
-        
-        String date = "2026-04-11"; // Fixed date as requested
-        
-        LocalDateTime departure = schedule.getDepartureTime();
-        LocalDateTime arrival = schedule.getArrivalTime();
-        
-        Duration duration = Duration.between(departure, arrival);
-        long hours = duration.toHours();
-        long minutes = duration.toMinutesPart();
-        String durationStr = String.format("%dh %dm", hours, minutes);
-        
-        Double price = Math.round(schedule.getPrice() * 100.0) / 100.0;
-        String type = schedule.getVehicle().getType().toString();
-        Integer seats = schedule.getAvailableSeats();
-        Integer totalSeats = schedule.getVehicle().getCapacity();
-        String busKind = schedule.getVehicle().getBusKind();
 
-        // Rating and reviews - use vehicle data or defaults
-        Double rating = schedule.getVehicle().getRating();
-        if (rating == null) {
-            // Generate varied ratings based on operator characteristics
-            int hash = Math.abs(operator.hashCode());
-            if (operator.toLowerCase().contains("volvo") || operator.toLowerCase().contains("scania")) {
-                rating = 4.5 + (hash % 10) * 0.05; // 4.5-4.95 for premium buses
-            } else if (operator.toLowerCase().contains("ac")) {
-                rating = 4.0 + (hash % 15) * 0.05; // 4.0-4.7 for AC buses
-            } else {
-                rating = 3.5 + (hash % 20) * 0.05; // 3.5-4.45 for others
-            }
-        }
-        
-        Integer reviews = schedule.getVehicle().getReviews();
-        if (reviews == null) {
-            // Generate varied review counts based on operator popularity
-            int hash = Math.abs(operator.hashCode());
-            if (operator.toLowerCase().contains("ksrtc") || operator.toLowerCase().contains("apsrtc")) {
-                reviews = 2000 + (hash % 3000); // 2000-5000 for government operators
-            } else if (operator.toLowerCase().contains("vrl") || operator.toLowerCase().contains("srs")) {
-                reviews = 1500 + (hash % 2000); // 1500-3500 for popular private operators
-            } else {
-                reviews = 500 + (hash % 1500); // 500-2000 for others
-            }
-        }
-        
-        // People's choice - parse from vehicle data or generate varied sample
-        List<String> peoplesChoice = List.of();
-        String peoplesChoiceStr = schedule.getVehicle().getPeoplesChoice();
-        if (peoplesChoiceStr != null && !peoplesChoiceStr.isEmpty()) {
-            // Parse comma-separated values
-            peoplesChoice = Arrays.asList(peoplesChoiceStr.split(","));
-        } else {
-            // Generate varied people's choice based on operator and bus type
-            String operatorLower = operator.toLowerCase();
-            String busKindLower = busKind != null ? busKind.toLowerCase() : "";
-            
-            if (operatorLower.contains("volvo") || operatorLower.contains("scania")) {
-                peoplesChoice = Arrays.asList("Safety", "Comfort", "Luxury");
-            } else if (operatorLower.contains("ksrtc") || operatorLower.contains("apsrtc")) {
-                peoplesChoice = Arrays.asList("Safety", "Punctuality", "Affordability");
-            } else if (busKindLower.contains("sleeper")) {
-                peoplesChoice = Arrays.asList("Comfort", "Safety", "Cleanliness");
-            } else if (busKindLower.contains("seater")) {
-                peoplesChoice = Arrays.asList("Value", "Punctuality", "Service");
-            } else if (operatorLower.contains("express")) {
-                peoplesChoice = Arrays.asList("Speed", "Punctuality", "Efficiency");
-            } else {
-                // Random choices for other operators
-                List<String[]> choices = Arrays.asList(
-                    new String[]{"Safety", "Reliability"},
-                    new String[]{"Comfort", "Service"},
-                    new String[]{"Value", "Cleanliness"},
-                    new String[]{"Punctuality", "Efficiency"}
-                );
-                int index = Math.abs(operator.hashCode()) % choices.size();
-                peoplesChoice = Arrays.asList(choices.get(index));
-            }
-        }
+        String date = "2026-04-11";
+        String durationStr = formatDuration(schedule.getDepartureTime(), schedule.getArrivalTime());
+        Double price = Math.round(schedule.getPrice() * 100.0) / 100.0;
+        String busKind = schedule.getVehicle().getBusKind();
+        List<String> peoplesChoice = parsePeoplesChoice(schedule.getVehicle().getPeoplesChoice(), operator, busKind);
 
         return new BusResponse(
             schedule.getVehicle().getId(),
@@ -146,18 +77,52 @@ public class BusService {
             from,
             to,
             date,
-            departure,
-            arrival,
+            schedule.getDepartureTime(),
+            schedule.getArrivalTime(),
             durationStr,
             price,
-            type,
-            seats,
-            totalSeats,
+            schedule.getVehicle().getType().toString(),
+            schedule.getAvailableSeats(),
+            schedule.getVehicle().getCapacity(),
             busKind,
-            rating,
-            reviews,
+            schedule.getVehicle().getRating(),
+            schedule.getVehicle().getReviews(),
             peoplesChoice
         );
+    }
+
+    private String formatDuration(LocalDateTime departure, LocalDateTime arrival) {
+        Duration duration = Duration.between(departure, arrival);
+        return String.format("%dh %dm", duration.toHours(), duration.toMinutesPart());
+    }
+
+    private List<String> parsePeoplesChoice(String peoplesChoiceStr, String operator, String busKind) {
+        if (peoplesChoiceStr != null && !peoplesChoiceStr.isEmpty()) {
+            return Arrays.asList(peoplesChoiceStr.split(","));
+        }
+
+        String operatorLower = operator.toLowerCase();
+        String busKindLower = busKind != null ? busKind.toLowerCase() : "";
+
+        if (operatorLower.contains("volvo") || operatorLower.contains("scania")) {
+            return List.of("Safety", "Comfort", "Luxury");
+        } else if (operatorLower.contains("ksrtc") || operatorLower.contains("apsrtc")) {
+            return List.of("Safety", "Punctuality", "Affordability");
+        } else if (busKindLower.contains("sleeper")) {
+            return List.of("Comfort", "Safety", "Cleanliness");
+        } else if (busKindLower.contains("seater")) {
+            return List.of("Value", "Punctuality", "Service");
+        } else if (operatorLower.contains("express")) {
+            return List.of("Speed", "Punctuality", "Efficiency");
+        }
+
+        List<String[]> choices = List.of(
+            new String[]{"Safety", "Reliability"},
+            new String[]{"Comfort", "Service"},
+            new String[]{"Value", "Cleanliness"},
+            new String[]{"Punctuality", "Efficiency"}
+        );
+        return Arrays.asList(choices.get(Math.abs(operator.hashCode()) % choices.size()));
     }
 
     public ExpandedBusResponse getExpandedBusDetails(String scheduleId) {
@@ -211,31 +176,21 @@ public class BusService {
     }
 
     private Map<String, Boolean> parseAmenities(String amenitiesJson) {
-        Map<String, Boolean> amenities = new HashMap<>();
-        if (amenitiesJson != null && !amenitiesJson.isEmpty()) {
-            try {
-                // Parse JSON string to Map
-                Map<String, Object> parsed = objectMapper.readValue(amenitiesJson, Map.class);
-                for (Map.Entry<String, Object> entry : parsed.entrySet()) {
-                    if (entry.getValue() instanceof Boolean) {
-                        amenities.put(entry.getKey(), (Boolean) entry.getValue());
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error parsing amenities JSON: {}", e.getMessage());
-                // Fallback to default amenities
-                amenities.put("AC", true);
-                amenities.put("WiFi", true);
-                amenities.put("Charging Point", true);
-                amenities.put("Water Bottle", true);
-            }
-        } else {
-            // Default amenities if none provided
-            amenities.put("AC", true);
-            amenities.put("WiFi", true);
-            amenities.put("Charging Point", true);
-            amenities.put("Water Bottle", true);
+        if (amenitiesJson == null || amenitiesJson.isEmpty()) {
+            return new HashMap<>(DEFAULT_AMENITIES);
         }
-        return amenities;
+        try {
+            Map<String, Object> parsed = objectMapper.readValue(amenitiesJson, Map.class);
+            Map<String, Boolean> amenities = new HashMap<>();
+            for (Map.Entry<String, Object> entry : parsed.entrySet()) {
+                if (entry.getValue() instanceof Boolean) {
+                    amenities.put(entry.getKey(), (Boolean) entry.getValue());
+                }
+            }
+            return amenities.isEmpty() ? new HashMap<>(DEFAULT_AMENITIES) : amenities;
+        } catch (Exception e) {
+            log.error("Error parsing amenities JSON: {}", e.getMessage());
+            return new HashMap<>(DEFAULT_AMENITIES);
+        }
     }
 }

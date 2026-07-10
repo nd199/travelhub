@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 public class PolicyService {
 
     private final PolicyRepository policyRepository;
-    
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PolicyService.class);
 
     public List<PolicyResponse> getPoliciesByVehicle(String vehicleId) {
         log.info("Fetching policies for vehicle: {}", vehicleId);

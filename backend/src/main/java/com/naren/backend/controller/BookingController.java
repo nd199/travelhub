@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -69,32 +68,10 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/travel-date")
-    public ResponseEntity<List<BookingResponse>> getBookingsByTravelDate(@RequestParam LocalDateTime travelDate) {
-        return ResponseEntity.ok(bookingService.getBookingsByTravelDate(travelDate));
-    }
-
-    @GetMapping("/travel-date/before")
-    public ResponseEntity<List<BookingResponse>> getBookingsByTravelDateBefore(@RequestParam LocalDateTime dateTime) {
-        return ResponseEntity.ok(bookingService.getBookingsByTravelDateBefore(dateTime));
-    }
-
-    @GetMapping("/travel-date/between")
-    public ResponseEntity<List<BookingResponse>> getBookingsByTravelDateBetween(
-            @RequestParam LocalDateTime start, @RequestParam LocalDateTime end) {
-        return ResponseEntity.ok(bookingService.getBookingsByTravelDateBetween(start, end));
-    }
-
     @GetMapping("/user/{userId}/status/{status}")
     public ResponseEntity<List<BookingResponse>> getBookingsByUserIdAndStatus(
             @PathVariable String userId, @PathVariable String status) {
         return ResponseEntity.ok(bookingService.getBookingsByUserIdAndStatus(userId, status));
-    }
-
-    @GetMapping("/user/{userId}/travel-date/between")
-    public ResponseEntity<List<BookingResponse>> getBookingsByUserIdAndTravelDateBetween(
-            @PathVariable String userId, @RequestParam LocalDateTime start, @RequestParam LocalDateTime end) {
-        return ResponseEntity.ok(bookingService.getBookingsByUserIdAndTravelDateBetween(userId, start, end));
     }
 
     @GetMapping("/count/user/{userId}")

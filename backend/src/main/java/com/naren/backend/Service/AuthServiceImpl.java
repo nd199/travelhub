@@ -47,24 +47,9 @@ public class AuthServiceImpl implements AuthService {
                 throw new AuthenticationException("Invalid credentials");
             }
             
-            // Create a simple UserDetails-like object for JWT generation
-            org.springframework.security.core.userdetails.UserDetails userDetails = 
-                org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getEmail())
-                    .password(user.getPassword())
-                    .authorities(List.of(() -> "ROLE_USER"))
-                    .build();
-            
-            String accessToken = jwtUtil.generateToken(userDetails);
-            String refreshToken = jwtUtil.generateRefreshToken(userDetails);
-            
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("tokenType", "Bearer");
-            claims.put("accessToken", accessToken);
-            claims.put("refreshToken", refreshToken);
-            
+            String[] tokens = generateTokens(user);
             logger.info("Login successful for email: {}", request.email());
-            return mapToUserResponse(user, claims);
+            return mapToUserResponse(user, buildTokenClaims(tokens[0], tokens[1]));
             
         } catch (AuthenticationException e) {
             logger.warn("Login failed for email: {}", request.email(), e);
@@ -96,24 +81,9 @@ public class AuthServiceImpl implements AuthService {
         
         Users savedUser = userRepository.save(user);
         
-        // Create a simple UserDetails-like object for JWT generation
-        org.springframework.security.core.userdetails.UserDetails userDetails = 
-            org.springframework.security.core.userdetails.User.builder()
-                .username(savedUser.getEmail())
-                .password(savedUser.getPassword())
-                .authorities(List.of(() -> "ROLE_USER"))
-                .build();
-        
-        String accessToken = jwtUtil.generateToken(userDetails);
-        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
-        
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("tokenType", "Bearer");
-        claims.put("accessToken", accessToken);
-        claims.put("refreshToken", refreshToken);
-        
+        String[] tokens = generateTokens(savedUser);
         logger.info("Registration successful for email: {}", request.email());
-        return mapToUserResponse(savedUser, claims);
+        return mapToUserResponse(savedUser, buildTokenClaims(tokens[0], tokens[1]));
     }
 
     @Override
@@ -127,24 +97,10 @@ public class AuthServiceImpl implements AuthService {
             Users user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
             
-            org.springframework.security.core.userdetails.UserDetails userDetails = 
-                org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getEmail())
-                    .password(user.getPassword())
-                    .authorities(List.of(() -> "ROLE_USER"))
-                    .build();
-            
-            if (jwtUtil.validateToken(refreshToken, userDetails)) {
-                String newAccessToken = jwtUtil.generateToken(userDetails);
-                String newRefreshToken = jwtUtil.generateRefreshToken(userDetails);
-                
-                Map<String, Object> claims = new HashMap<>();
-                claims.put("tokenType", "Bearer");
-                claims.put("accessToken", newAccessToken);
-                claims.put("refreshToken", newRefreshToken);
-                
+            if (jwtUtil.validateToken(refreshToken, buildUserDetails(user))) {
+                String[] tokens = generateTokens(user);
                 logger.info("Token refresh successful for user: {}", username);
-                return mapToUserResponse(user, claims);
+                return mapToUserResponse(user, buildTokenClaims(tokens[0], tokens[1]));
             } else {
                 throw new AuthenticationException("Invalid refresh token");
             }
@@ -167,14 +123,7 @@ public class AuthServiceImpl implements AuthService {
             Users user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
             
-            org.springframework.security.core.userdetails.UserDetails userDetails = 
-                org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getEmail())
-                    .password(user.getPassword())
-                    .authorities(List.of(() -> "ROLE_USER"))
-                    .build();
-            
-            return jwtUtil.validateToken(token, userDetails);
+            return jwtUtil.validateToken(token, buildUserDetails(user));
         } catch (Exception e) {
             logger.debug("Token verification failed", e);
             return false;
@@ -197,14 +146,7 @@ public class AuthServiceImpl implements AuthService {
             Users user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
             
-            org.springframework.security.core.userdetails.UserDetails userDetails = 
-                org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getEmail())
-                    .password(user.getPassword())
-                    .authorities(List.of(() -> "ROLE_USER"))
-                    .build();
-            
-            if (jwtUtil.validateToken(token, userDetails)) {
+            if (jwtUtil.validateToken(token, buildUserDetails(user))) {
                 return mapToUserResponse(user, new HashMap<>());
             } else {
                 throw new AuthenticationException("Invalid token");
@@ -216,6 +158,30 @@ public class AuthServiceImpl implements AuthService {
             logger.warn("Failed to get current user", e);
             throw new AuthenticationException("Failed to get current user", e);
         }
+    }
+
+    private org.springframework.security.core.userdetails.UserDetails buildUserDetails(Users user) {
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(List.of(() -> "ROLE_USER"))
+                .build();
+    }
+
+    private String[] generateTokens(Users user) {
+        org.springframework.security.core.userdetails.UserDetails userDetails = buildUserDetails(user);
+        return new String[] {
+            jwtUtil.generateToken(userDetails),
+            jwtUtil.generateRefreshToken(userDetails)
+        };
+    }
+
+    private Map<String, Object> buildTokenClaims(String accessToken, String refreshToken) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("tokenType", "Bearer");
+        claims.put("accessToken", accessToken);
+        claims.put("refreshToken", refreshToken);
+        return claims;
     }
 
     private UserResponse mapToUserResponse(Users user, Map<String, Object> additionalClaims) {

@@ -29,8 +29,6 @@ public class DataSeedingService {
     private final BusPhotoRepository busPhotoRepository;
     private final Faker faker = new Faker();
     private final Random random = new Random();
-    
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSeedingService.class);
 
     @Transactional
     public void seedAllData() {

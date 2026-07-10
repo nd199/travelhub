@@ -5,7 +5,6 @@ import com.naren.backend.entity.Booking;
 import com.naren.backend.entity.BookingStatus;
 import com.naren.backend.entity.Schedule;
 import com.naren.backend.entity.Users;
-import com.naren.backend.exception.DuplicateResourceException;
 import com.naren.backend.exception.InvalidInputException;
 import com.naren.backend.exception.ResourceNotFoundException;
 import com.naren.backend.record.BookingRequest;
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,10 +46,6 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Schedule not found: " + bookingRequest.scheduleId()));
 
         String bookingReference = generateBookingReference();
-
-        if (bookingRepository.existsByBookingReference(bookingReference)) {
-            throw new DuplicateResourceException("Booking already exists: " + bookingReference);
-        }
 
         Booking booking = new Booking();
         booking.setBookingReference(bookingReference);
@@ -133,31 +127,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponse> getBookingsByTravelDate(LocalDateTime travelDate) {
-        return List.of(); // Simplified implementation for testing
-    }
-
-    @Override
-    public List<BookingResponse> getBookingsByTravelDateBefore(LocalDateTime dateTime) {
-        return List.of(); // Simplified implementation for testing
-    }
-
-    @Override
-    public List<BookingResponse> getBookingsByTravelDateBetween(LocalDateTime start, LocalDateTime end) {
-        return List.of(); // Simplified implementation for testing
-    }
-
-    @Override
     public List<BookingResponse> getBookingsByUserIdAndStatus(String userId, String status) {
         BookingStatus bookingStatus = parseBookingStatus(status);
         return bookingRepository.findByUserIdAndStatus(userId, bookingStatus).stream()
                 .map(bookingMapper)
                 .toList();
-    }
-
-    @Override
-    public List<BookingResponse> getBookingsByUserIdAndTravelDateBetween(String userId, LocalDateTime start, LocalDateTime end) {
-        return List.of(); // Simplified implementation for testing
     }
 
     @Override

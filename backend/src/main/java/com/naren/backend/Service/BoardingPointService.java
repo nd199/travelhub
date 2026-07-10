@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class BoardingPointService {
 
     private final BoardingPointRepository boardingPointRepository;
-    
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BoardingPointService.class);
 
     public List<BoardingPointResponse> getBoardingPointsByRoute(String routeId) {
         log.info("Fetching boarding points for route: {}", routeId);
