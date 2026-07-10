@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
 import { FaBus, FaPlane, FaTrain } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { logoutUser } from '../store/slices/authSlice';
 
-export function Navbar({ variant = 'landing', isLoggedIn = false }) {
+export function Navbar({ variant = 'landing' }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const isHomePage = router.pathname === '/' || router.pathname === '/index';
 
   useEffect(() => {
@@ -16,6 +20,13 @@ export function Navbar({ variant = 'landing', isLoggedIn = false }) {
     handleScroll();
     return () => globalThis.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    dispatch(logoutUser()).then(() => {
+      toast.success('Logged out successfully');
+      router.push('/');
+    });
+  };
 
   // Landing page variant styles (home page)
   const landingClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -38,13 +49,16 @@ export function Navbar({ variant = 'landing', isLoggedIn = false }) {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
       <div className="relative flex items-center justify-between px-8 py-4 mx-auto max-w-8xl md:px-16">
-        <h1 className="text-2xl font-extrabold tracking-tight text-white">
+        <a href="/" className="text-2xl font-extrabold tracking-tight text-white">
           TravelHub
-        </h1>
+        </a>
 
         {isHomePage ? (
-          <button className="px-5 py-2 font-semibold text-tertiary transition bg-white rounded-full hover:bg-tertiary-lighter">
-            Login
+          <button
+            onClick={() => router.push(isAuthenticated ? '/bookings' : '/login')}
+            className="px-5 py-2 font-semibold text-tertiary transition bg-white rounded-full hover:bg-tertiary-lighter"
+          >
+            {isAuthenticated ? 'My Bookings' : 'Login'}
           </button>
         ) : (
           <>
@@ -53,35 +67,35 @@ export function Navbar({ variant = 'landing', isLoggedIn = false }) {
                 <FaBus className="text-lg" />
                 Bus
               </a>
-              <a href="#" className="flex items-center gap-2 text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
+              <a href="/flight/flightResults" className="flex items-center gap-2 text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
                 <FaPlane className="text-lg" />
                 Flight
               </a>
-              <a href="#" className="flex items-center gap-2 text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
+              <a href="/train/trainResults" className="flex items-center gap-2 text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
                 <FaTrain className="text-lg" />
                 Train
               </a>
             </div>
-            {isLoggedIn ? (
+            {isAuthenticated ? (
                <div className="flex items-center gap-4">
-                <a href="#" className="text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
+                <a href="/bookings" className="text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
                   My Bookings
                 </a>
-                <a href="#" className="text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
+                <a href="/profile" className="text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
                   Profile
                 </a>
-                <a href="#" className="text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200">
-                  Notifications
-                </a>
                 <button
-                  onClick={() => toast.success('Logged out successfully')}
+                  onClick={handleLogout}
                   className="px-4 py-1.5 font-medium rounded-lg bg-white/20 hover:bg-white/30 text-white transition-all duration-200"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <button className="px-6 py-2 font-semibold text-tertiary transition bg-white rounded-full hover:bg-tertiary-lighter hover:shadow-lg">
+              <button
+                onClick={() => router.push('/login')}
+                className="px-6 py-2 font-semibold text-tertiary transition bg-white rounded-full hover:bg-tertiary-lighter hover:shadow-lg"
+              >
                 Login
               </button>
             )}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/router'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { motion } from 'framer-motion'
@@ -23,6 +24,7 @@ const flightValidationSchema = Yup.object({
 })
 
 export function FlightForm({ onTabChange, activeTab: externalTab }) {
+  const router = useRouter();
   const dispatch = useDispatch();
   const { cities, loading: citiesLoading } = useSelector((state) => state.city);
   const [internalTab, setInternalTab] = useState("flight")
