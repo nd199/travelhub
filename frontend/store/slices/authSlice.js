@@ -1,84 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api, { getLocalStorageItem, setLocalStorageItem, removeLocalStorageItem } from '../../lib/api';
 import axios from 'axios';
 
-// API base URL - updated to use port 8080 for Spring Boot backend
+// API base URL for direct axios calls (refresh token)
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
-
-// LocalStorage helper for SSR compatibility
-const getLocalStorageItem = (key) => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem(key);
-  }
-  return null;
-};
-
-const setLocalStorageItem = (key, value) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(key, value);
-  }
-};
-
-const removeLocalStorageItem = (key) => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(key);
-  }
-};
-
-// Create axios instance with default headers
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add request interceptor to include auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = getLocalStorageItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Add response interceptor for token refresh
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
-      try {
-        const refreshToken = getLocalStorageItem('refreshToken');
-        if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
-            refreshToken,
-          });
-          
-          const { token } = response.data;
-          setLocalStorageItem('token', token);
-          
-          // Retry the original request
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        }
-      } catch (refreshError) {
-        // Refresh failed, logout user
-        removeLocalStorageItem('token');
-        removeLocalStorageItem('refreshToken');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
-    }
-    
-    return Promise.reject(error);
-  }
-);
 
 // Async thunks
 export const loginUser = createAsyncThunk(
